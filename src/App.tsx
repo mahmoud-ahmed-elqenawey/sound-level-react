@@ -1,22 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Activity,
   AlertTriangle,
   Volume2,
-  TrendingUp,
-  Clock,
-  Calendar,
   Building2,
   Bell,
-  BarChart3,
-  Menu,
-  X,
   ChevronDown,
   ChevronUp,
   Wifi,
   WifiOff,
 } from "lucide-react";
 import LoginForm from "./pages/Login";
+import axios from "axios";
 
 interface Sensor {
   id: string;
@@ -60,561 +55,571 @@ interface User {
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    localStorage.getItem("token") ? true : false
+  );
   const [user, setUser] = useState<User | null>(null);
   const [loginError, setLoginError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const [departments, setDepartments] = useState<Department[]>([
-    {
-      id: "icu",
-      name: "ICU",
-      nameAr: "العناية المركزة",
-      currentNoise: 45,
-      threshold: 40,
-      status: "warning",
-      hourlyData: [38, 42, 45, 48, 44, 46, 45, 43],
-      dailyData: [42, 45, 38, 46, 44, 48, 45],
-      tenMinData: [44, 45, 46, 45, 44, 45, 46, 47, 45, 44, 46, 45],
-      sixHourData: [40, 42, 44, 46],
-      sensors: [
-        {
-          id: "icu-s1",
-          name: "Sensor 1",
-          location: "Patient Room A",
-          locationAr: "غرفة المريض أ",
-          currentNoise: 42,
-          status: "warning",
-          batteryLevel: 85,
-          lastUpdate: "14:32",
-          hourlyData: [38, 40, 42, 44, 41, 43, 42, 40],
-        },
-        {
-          id: "icu-s2",
-          name: "Sensor 2",
-          location: "Patient Room B",
-          locationAr: "غرفة المريض ب",
-          currentNoise: 38,
-          status: "safe",
-          batteryLevel: 92,
-          lastUpdate: "14:32",
-          hourlyData: [35, 37, 38, 40, 36, 39, 38, 36],
-        },
-        {
-          id: "icu-s3",
-          name: "Sensor 3",
-          location: "Nurses Station",
-          locationAr: "محطة التمريض",
-          currentNoise: 48,
-          status: "critical",
-          batteryLevel: 78,
-          lastUpdate: "14:32",
-          hourlyData: [45, 47, 48, 50, 46, 49, 48, 46],
-        },
-        {
-          id: "icu-s4",
-          name: "Sensor 4",
-          location: "Equipment Area",
-          locationAr: "منطقة المعدات",
-          currentNoise: 52,
-          status: "critical",
-          batteryLevel: 65,
-          lastUpdate: "14:32",
-          hourlyData: [48, 50, 52, 54, 50, 53, 52, 49],
-        },
-        {
-          id: "icu-s5",
-          name: "Sensor 5",
-          location: "Corridor",
-          locationAr: "الممر",
-          currentNoise: 35,
-          status: "safe",
-          batteryLevel: 88,
-          lastUpdate: "14:32",
-          hourlyData: [32, 34, 35, 37, 33, 36, 35, 33],
-        },
-        {
-          id: "icu-s6",
-          name: "Sensor 6",
-          location: "Family Area",
-          locationAr: "منطقة الأسرة",
-          currentNoise: 40,
-          status: "safe",
-          batteryLevel: 45,
-          lastUpdate: "14:31",
-          hourlyData: [37, 39, 40, 42, 38, 41, 40, 38],
-        },
-        {
-          id: "icu-s7",
-          name: "Sensor 7",
-          location: "Storage Room",
-          locationAr: "غرفة التخزين",
-          currentNoise: 0,
-          status: "offline",
-          batteryLevel: 12,
-          lastUpdate: "13:45",
-          hourlyData: [28, 30, 0, 0, 0, 0, 0, 0],
-        },
-      ],
-    },
-    {
-      id: "emergency",
-      name: "Emergency",
-      nameAr: "الطوارئ",
-      currentNoise: 65,
-      threshold: 50,
-      status: "critical",
-      hourlyData: [55, 62, 68, 65, 70, 64, 65, 58],
-      dailyData: [58, 62, 55, 68, 65, 70, 65],
-      tenMinData: [63, 65, 67, 66, 64, 65, 68, 69, 65, 64, 66, 65],
-      sixHourData: [58, 62, 66, 65],
-      sensors: [
-        {
-          id: "em-s1",
-          name: "Sensor 1",
-          location: "Triage Area",
-          locationAr: "منطقة الفرز",
-          currentNoise: 68,
-          status: "critical",
-          batteryLevel: 90,
-          lastUpdate: "14:32",
-          hourlyData: [62, 65, 68, 70, 66, 69, 68, 64],
-        },
-        {
-          id: "em-s2",
-          name: "Sensor 2",
-          location: "Treatment Room 1",
-          locationAr: "غرفة العلاج 1",
-          currentNoise: 58,
-          status: "critical",
-          batteryLevel: 82,
-          lastUpdate: "14:32",
-          hourlyData: [52, 55, 58, 60, 56, 59, 58, 54],
-        },
-        {
-          id: "em-s3",
-          name: "Sensor 3",
-          location: "Treatment Room 2",
-          locationAr: "غرفة العلاج 2",
-          currentNoise: 72,
-          status: "critical",
-          batteryLevel: 76,
-          lastUpdate: "14:32",
-          hourlyData: [68, 70, 72, 74, 70, 73, 72, 69],
-        },
-        {
-          id: "em-s4",
-          name: "Sensor 4",
-          location: "Waiting Area",
-          locationAr: "منطقة الانتظار",
-          currentNoise: 62,
-          status: "critical",
-          batteryLevel: 88,
-          lastUpdate: "14:32",
-          hourlyData: [58, 60, 62, 64, 60, 63, 62, 59],
-        },
-        {
-          id: "em-s5",
-          name: "Sensor 5",
-          location: "Ambulance Bay",
-          locationAr: "خليج الإسعاف",
-          currentNoise: 75,
-          status: "critical",
-          batteryLevel: 55,
-          lastUpdate: "14:32",
-          hourlyData: [70, 72, 75, 78, 74, 77, 75, 71],
-        },
-        {
-          id: "em-s6",
-          name: "Sensor 6",
-          location: "Staff Area",
-          locationAr: "منطقة الموظفين",
-          currentNoise: 48,
-          status: "safe",
-          batteryLevel: 93,
-          lastUpdate: "14:32",
-          hourlyData: [44, 46, 48, 50, 46, 49, 48, 45],
-        },
-        {
-          id: "em-s7",
-          name: "Sensor 7",
-          location: "Supply Room",
-          locationAr: "غرفة الإمدادات",
-          currentNoise: 42,
-          status: "safe",
-          batteryLevel: 67,
-          lastUpdate: "14:32",
-          hourlyData: [38, 40, 42, 44, 40, 43, 42, 39],
-        },
-      ],
-    },
-    {
-      id: "surgery",
-      name: "Surgery",
-      nameAr: "العمليات",
-      currentNoise: 35,
-      threshold: 40,
-      status: "safe",
-      hourlyData: [32, 35, 38, 35, 33, 36, 35, 34],
-      dailyData: [34, 35, 32, 38, 35, 36, 35],
-      tenMinData: [34, 35, 36, 35, 34, 35, 36, 37, 35, 34, 36, 35],
-      sixHourData: [32, 34, 36, 35],
-      sensors: [
-        {
-          id: "sur-s1",
-          name: "Sensor 1",
-          location: "OR 1",
-          locationAr: "غرفة العمليات 1",
-          currentNoise: 32,
-          status: "safe",
-          batteryLevel: 95,
-          lastUpdate: "14:32",
-          hourlyData: [28, 30, 32, 34, 30, 33, 32, 29],
-        },
-        {
-          id: "sur-s2",
-          name: "Sensor 2",
-          location: "OR 2",
-          locationAr: "غرفة العمليات 2",
-          currentNoise: 38,
-          status: "safe",
-          batteryLevel: 87,
-          lastUpdate: "14:32",
-          hourlyData: [34, 36, 38, 40, 36, 39, 38, 35],
-        },
-        {
-          id: "sur-s3",
-          name: "Sensor 3",
-          location: "OR 3",
-          locationAr: "غرفة العمليات 3",
-          currentNoise: 35,
-          status: "safe",
-          batteryLevel: 91,
-          lastUpdate: "14:32",
-          hourlyData: [31, 33, 35, 37, 33, 36, 35, 32],
-        },
-        {
-          id: "sur-s4",
-          name: "Sensor 4",
-          location: "Prep Room",
-          locationAr: "غرفة التحضير",
-          currentNoise: 40,
-          status: "safe",
-          batteryLevel: 73,
-          lastUpdate: "14:32",
-          hourlyData: [36, 38, 40, 42, 38, 41, 40, 37],
-        },
-        {
-          id: "sur-s5",
-          name: "Sensor 5",
-          location: "Recovery",
-          locationAr: "الإنعاش",
-          currentNoise: 28,
-          status: "safe",
-          batteryLevel: 84,
-          lastUpdate: "14:32",
-          hourlyData: [24, 26, 28, 30, 26, 29, 28, 25],
-        },
-        {
-          id: "sur-s6",
-          name: "Sensor 6",
-          location: "Scrub Area",
-          locationAr: "منطقة التعقيم",
-          currentNoise: 36,
-          status: "safe",
-          batteryLevel: 79,
-          lastUpdate: "14:32",
-          hourlyData: [32, 34, 36, 38, 34, 37, 36, 33],
-        },
-        {
-          id: "sur-s7",
-          name: "Sensor 7",
-          location: "Anesthesia Room",
-          locationAr: "غرفة التخدير",
-          currentNoise: 33,
-          status: "safe",
-          batteryLevel: 88,
-          lastUpdate: "14:32",
-          hourlyData: [29, 31, 33, 35, 31, 34, 33, 30],
-        },
-      ],
-    },
-    {
-      id: "pediatrics",
-      name: "Pediatrics",
-      nameAr: "الأطفال",
-      currentNoise: 48,
-      threshold: 35,
-      status: "critical",
-      hourlyData: [42, 45, 48, 52, 46, 49, 48, 44],
-      dailyData: [44, 45, 42, 52, 48, 49, 48],
-      tenMinData: [46, 47, 48, 49, 47, 48, 50, 51, 48, 47, 49, 48],
-      sixHourData: [44, 46, 50, 48],
-      sensors: [
-        {
-          id: "ped-s1",
-          name: "Sensor 1",
-          location: "Infant Ward",
-          locationAr: "جناح الرضع",
-          currentNoise: 52,
-          status: "critical",
-          batteryLevel: 89,
-          lastUpdate: "14:32",
-          hourlyData: [46, 48, 52, 54, 50, 53, 52, 48],
-        },
-        {
-          id: "ped-s2",
-          name: "Sensor 2",
-          location: "Toddler Room",
-          locationAr: "غرفة الأطفال الصغار",
-          currentNoise: 58,
-          status: "critical",
-          batteryLevel: 76,
-          lastUpdate: "14:32",
-          hourlyData: [52, 55, 58, 60, 56, 59, 58, 54],
-        },
-        {
-          id: "ped-s3",
-          name: "Sensor 3",
-          location: "Play Area",
-          locationAr: "منطقة اللعب",
-          currentNoise: 45,
-          status: "critical",
-          batteryLevel: 92,
-          lastUpdate: "14:32",
-          hourlyData: [39, 42, 45, 48, 44, 47, 45, 41],
-        },
-        {
-          id: "ped-s4",
-          name: "Sensor 4",
-          location: "Family Room",
-          locationAr: "غرفة الأسرة",
-          currentNoise: 42,
-          status: "critical",
-          batteryLevel: 68,
-          lastUpdate: "14:32",
-          hourlyData: [36, 39, 42, 45, 41, 44, 42, 38],
-        },
-        {
-          id: "ped-s5",
-          name: "Sensor 5",
-          location: "Nurses Station",
-          locationAr: "محطة التمريض",
-          currentNoise: 48,
-          status: "critical",
-          batteryLevel: 85,
-          lastUpdate: "14:32",
-          hourlyData: [42, 45, 48, 51, 47, 50, 48, 44],
-        },
-        {
-          id: "ped-s6",
-          name: "Sensor 6",
-          location: "Treatment Room",
-          locationAr: "غرفة العلاج",
-          currentNoise: 38,
-          status: "critical",
-          batteryLevel: 71,
-          lastUpdate: "14:32",
-          hourlyData: [32, 35, 38, 41, 37, 40, 38, 34],
-        },
-        {
-          id: "ped-s7",
-          name: "Sensor 7",
-          location: "Isolation Room",
-          locationAr: "غرفة العزل",
-          currentNoise: 35,
-          status: "safe",
-          batteryLevel: 94,
-          lastUpdate: "14:32",
-          hourlyData: [29, 32, 35, 38, 34, 37, 35, 31],
-        },
-      ],
-    },
-    {
-      id: "general",
-      name: "General Ward",
-      nameAr: "الأجنحة العامة",
-      currentNoise: 32,
-      threshold: 40,
-      status: "safe",
-      hourlyData: [28, 32, 35, 32, 30, 33, 32, 29],
-      dailyData: [30, 32, 28, 35, 32, 33, 32],
-      tenMinData: [30, 31, 32, 33, 31, 32, 34, 35, 32, 31, 33, 32],
-      sixHourData: [30, 31, 34, 32],
-      sensors: [
-        {
-          id: "gen-s1",
-          name: "Sensor 1",
-          location: "Ward A",
-          locationAr: "الجناح أ",
-          currentNoise: 35,
-          status: "safe",
-          batteryLevel: 88,
-          lastUpdate: "14:32",
-          hourlyData: [31, 33, 35, 37, 33, 36, 35, 32],
-        },
-        {
-          id: "gen-s2",
-          name: "Sensor 2",
-          location: "Ward B",
-          locationAr: "الجناح ب",
-          currentNoise: 30,
-          status: "safe",
-          batteryLevel: 92,
-          lastUpdate: "14:32",
-          hourlyData: [26, 28, 30, 32, 28, 31, 30, 27],
-        },
-        {
-          id: "gen-s3",
-          name: "Sensor 3",
-          location: "Ward C",
-          locationAr: "الجناح ج",
-          currentNoise: 28,
-          status: "safe",
-          batteryLevel: 75,
-          lastUpdate: "14:32",
-          hourlyData: [24, 26, 28, 30, 26, 29, 28, 25],
-        },
-        {
-          id: "gen-s4",
-          name: "Sensor 4",
-          location: "Common Area",
-          locationAr: "المنطقة المشتركة",
-          currentNoise: 38,
-          status: "safe",
-          batteryLevel: 83,
-          lastUpdate: "14:32",
-          hourlyData: [34, 36, 38, 40, 36, 39, 38, 35],
-        },
-        {
-          id: "gen-s5",
-          name: "Sensor 5",
-          location: "Nurses Station",
-          locationAr: "محطة التمريض",
-          currentNoise: 32,
-          status: "safe",
-          batteryLevel: 90,
-          lastUpdate: "14:32",
-          hourlyData: [28, 30, 32, 34, 30, 33, 32, 29],
-        },
-        {
-          id: "gen-s6",
-          name: "Sensor 6",
-          location: "Visitor Area",
-          locationAr: "منطقة الزوار",
-          currentNoise: 36,
-          status: "safe",
-          batteryLevel: 67,
-          lastUpdate: "14:32",
-          hourlyData: [32, 34, 36, 38, 34, 37, 36, 33],
-        },
-        {
-          id: "gen-s7",
-          name: "Sensor 7",
-          location: "Medication Room",
-          locationAr: "غرفة الأدوية",
-          currentNoise: 25,
-          status: "safe",
-          batteryLevel: 95,
-          lastUpdate: "14:32",
-          hourlyData: [21, 23, 25, 27, 23, 26, 25, 22],
-        },
-      ],
-    },
-    {
-      id: "radiology",
-      name: "Radiology",
-      nameAr: "الأشعة",
-      currentNoise: 42,
-      threshold: 45,
-      status: "safe",
-      hourlyData: [38, 42, 44, 42, 40, 43, 42, 39],
-      dailyData: [40, 42, 38, 44, 42, 43, 42],
-      tenMinData: [40, 41, 42, 43, 41, 42, 44, 45, 42, 41, 43, 42],
-      sixHourData: [40, 41, 44, 42],
-      sensors: [
-        {
-          id: "rad-s1",
-          name: "Sensor 1",
-          location: "X-Ray Room 1",
-          locationAr: "غرفة الأشعة السينية 1",
-          currentNoise: 45,
-          status: "safe",
-          batteryLevel: 86,
-          lastUpdate: "14:32",
-          hourlyData: [41, 43, 45, 47, 43, 46, 45, 42],
-        },
-        {
-          id: "rad-s2",
-          name: "Sensor 2",
-          location: "X-Ray Room 2",
-          locationAr: "غرفة الأشعة السينية 2",
-          currentNoise: 48,
-          status: "critical",
-          batteryLevel: 79,
-          lastUpdate: "14:32",
-          hourlyData: [44, 46, 48, 50, 46, 49, 48, 45],
-        },
-        {
-          id: "rad-s3",
-          name: "Sensor 3",
-          location: "CT Scan Room",
-          locationAr: "غرفة الأشعة المقطعية",
-          currentNoise: 52,
-          status: "critical",
-          batteryLevel: 91,
-          lastUpdate: "14:32",
-          hourlyData: [48, 50, 52, 54, 50, 53, 52, 49],
-        },
-        {
-          id: "rad-s4",
-          name: "Sensor 4",
-          location: "MRI Room",
-          locationAr: "غرفة الرنين المغناطيسي",
-          currentNoise: 38,
-          status: "safe",
-          batteryLevel: 74,
-          lastUpdate: "14:32",
-          hourlyData: [34, 36, 38, 40, 36, 39, 38, 35],
-        },
-        {
-          id: "rad-s5",
-          name: "Sensor 5",
-          location: "Waiting Area",
-          locationAr: "منطقة الانتظار",
-          currentNoise: 35,
-          status: "safe",
-          batteryLevel: 88,
-          lastUpdate: "14:32",
-          hourlyData: [31, 33, 35, 37, 33, 36, 35, 32],
-        },
-        {
-          id: "rad-s6",
-          name: "Sensor 6",
-          location: "Control Room",
-          locationAr: "غرفة التحكم",
-          currentNoise: 40,
-          status: "safe",
-          batteryLevel: 82,
-          lastUpdate: "14:32",
-          hourlyData: [36, 38, 40, 42, 38, 41, 40, 37],
-        },
-        {
-          id: "rad-s7",
-          name: "Sensor 7",
-          location: "Equipment Storage",
-          locationAr: "مخزن المعدات",
-          currentNoise: 32,
-          status: "safe",
-          batteryLevel: 65,
-          lastUpdate: "14:32",
-          hourlyData: [28, 30, 32, 34, 30, 33, 32, 29],
-        },
-      ],
-    },
-  ]);
+  const [departments, setDepartments] = useState([]);
 
-  const [alerts, setAlerts] = useState<Alert[]>([
+  // const data = fetch(
+  //   "https://sound-level-django-xkm4b.ondigitalocean.app/soundlevel/dashboard/"
+  // );
+
+  // console.log("data", data);
+
+  // const [departments, setDepartments] = useState<Department[]>([
+  //   {
+  //     id: "icu",
+  //     name: "ICU",
+  //     nameAr: "العناية المركزة",
+  //     currentNoise: 45,
+  //     threshold: 40,
+  //     status: "warning",
+  //     hourlyData: [38, 42, 45, 48, 44, 46, 45, 43],
+  //     dailyData: [42, 45, 38, 46, 44, 48, 45],
+  //     tenMinData: [44, 45, 46, 45, 44, 45, 46, 47, 45, 44, 46, 45],
+  //     sixHourData: [40, 42, 44, 46],
+  //     sensors: [
+  //       {
+  //         id: "icu-s1",
+  //         name: "Sensor 1",
+  //         location: "Patient Room A",
+  //         locationAr: "غرفة المريض أ",
+  //         currentNoise: 42,
+  //         status: "warning",
+  //         batteryLevel: 85,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [38, 40, 42, 44, 41, 43, 42, 40],
+  //       },
+  //       {
+  //         id: "icu-s2",
+  //         name: "Sensor 2",
+  //         location: "Patient Room B",
+  //         locationAr: "غرفة المريض ب",
+  //         currentNoise: 38,
+  //         status: "safe",
+  //         batteryLevel: 92,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [35, 37, 38, 40, 36, 39, 38, 36],
+  //       },
+  //       {
+  //         id: "icu-s3",
+  //         name: "Sensor 3",
+  //         location: "Nurses Station",
+  //         locationAr: "محطة التمريض",
+  //         currentNoise: 48,
+  //         status: "critical",
+  //         batteryLevel: 78,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [45, 47, 48, 50, 46, 49, 48, 46],
+  //       },
+  //       {
+  //         id: "icu-s4",
+  //         name: "Sensor 4",
+  //         location: "Equipment Area",
+  //         locationAr: "منطقة المعدات",
+  //         currentNoise: 52,
+  //         status: "critical",
+  //         batteryLevel: 65,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [48, 50, 52, 54, 50, 53, 52, 49],
+  //       },
+  //       {
+  //         id: "icu-s5",
+  //         name: "Sensor 5",
+  //         location: "Corridor",
+  //         locationAr: "الممر",
+  //         currentNoise: 35,
+  //         status: "safe",
+  //         batteryLevel: 88,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [32, 34, 35, 37, 33, 36, 35, 33],
+  //       },
+  //       {
+  //         id: "icu-s6",
+  //         name: "Sensor 6",
+  //         location: "Family Area",
+  //         locationAr: "منطقة الأسرة",
+  //         currentNoise: 40,
+  //         status: "safe",
+  //         batteryLevel: 45,
+  //         lastUpdate: "14:31",
+  //         hourlyData: [37, 39, 40, 42, 38, 41, 40, 38],
+  //       },
+  //       {
+  //         id: "icu-s7",
+  //         name: "Sensor 7",
+  //         location: "Storage Room",
+  //         locationAr: "غرفة التخزين",
+  //         currentNoise: 0,
+  //         status: "offline",
+  //         batteryLevel: 12,
+  //         lastUpdate: "13:45",
+  //         hourlyData: [28, 30, 0, 0, 0, 0, 0, 0],
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: "emergency",
+  //     name: "Emergency",
+  //     nameAr: "الطوارئ",
+  //     currentNoise: 65,
+  //     threshold: 50,
+  //     status: "critical",
+  //     hourlyData: [55, 62, 68, 65, 70, 64, 65, 58],
+  //     dailyData: [58, 62, 55, 68, 65, 70, 65],
+  //     tenMinData: [63, 65, 67, 66, 64, 65, 68, 69, 65, 64, 66, 65],
+  //     sixHourData: [58, 62, 66, 65],
+  //     sensors: [
+  //       {
+  //         id: "em-s1",
+  //         name: "Sensor 1",
+  //         location: "Triage Area",
+  //         locationAr: "منطقة الفرز",
+  //         currentNoise: 68,
+  //         status: "critical",
+  //         batteryLevel: 90,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [62, 65, 68, 70, 66, 69, 68, 64],
+  //       },
+  //       {
+  //         id: "em-s2",
+  //         name: "Sensor 2",
+  //         location: "Treatment Room 1",
+  //         locationAr: "غرفة العلاج 1",
+  //         currentNoise: 58,
+  //         status: "critical",
+  //         batteryLevel: 82,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [52, 55, 58, 60, 56, 59, 58, 54],
+  //       },
+  //       {
+  //         id: "em-s3",
+  //         name: "Sensor 3",
+  //         location: "Treatment Room 2",
+  //         locationAr: "غرفة العلاج 2",
+  //         currentNoise: 72,
+  //         status: "critical",
+  //         batteryLevel: 76,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [68, 70, 72, 74, 70, 73, 72, 69],
+  //       },
+  //       {
+  //         id: "em-s4",
+  //         name: "Sensor 4",
+  //         location: "Waiting Area",
+  //         locationAr: "منطقة الانتظار",
+  //         currentNoise: 62,
+  //         status: "critical",
+  //         batteryLevel: 88,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [58, 60, 62, 64, 60, 63, 62, 59],
+  //       },
+  //       {
+  //         id: "em-s5",
+  //         name: "Sensor 5",
+  //         location: "Ambulance Bay",
+  //         locationAr: "خليج الإسعاف",
+  //         currentNoise: 75,
+  //         status: "critical",
+  //         batteryLevel: 55,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [70, 72, 75, 78, 74, 77, 75, 71],
+  //       },
+  //       {
+  //         id: "em-s6",
+  //         name: "Sensor 6",
+  //         location: "Staff Area",
+  //         locationAr: "منطقة الموظفين",
+  //         currentNoise: 48,
+  //         status: "safe",
+  //         batteryLevel: 93,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [44, 46, 48, 50, 46, 49, 48, 45],
+  //       },
+  //       {
+  //         id: "em-s7",
+  //         name: "Sensor 7",
+  //         location: "Supply Room",
+  //         locationAr: "غرفة الإمدادات",
+  //         currentNoise: 42,
+  //         status: "safe",
+  //         batteryLevel: 67,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [38, 40, 42, 44, 40, 43, 42, 39],
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: "surgery",
+  //     name: "Surgery",
+  //     nameAr: "العمليات",
+  //     currentNoise: 35,
+  //     threshold: 40,
+  //     status: "safe",
+  //     hourlyData: [32, 35, 38, 35, 33, 36, 35, 34],
+  //     dailyData: [34, 35, 32, 38, 35, 36, 35],
+  //     tenMinData: [34, 35, 36, 35, 34, 35, 36, 37, 35, 34, 36, 35],
+  //     sixHourData: [32, 34, 36, 35],
+  //     sensors: [
+  //       {
+  //         id: "sur-s1",
+  //         name: "Sensor 1",
+  //         location: "OR 1",
+  //         locationAr: "غرفة العمليات 1",
+  //         currentNoise: 32,
+  //         status: "safe",
+  //         batteryLevel: 95,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [28, 30, 32, 34, 30, 33, 32, 29],
+  //       },
+  //       {
+  //         id: "sur-s2",
+  //         name: "Sensor 2",
+  //         location: "OR 2",
+  //         locationAr: "غرفة العمليات 2",
+  //         currentNoise: 38,
+  //         status: "safe",
+  //         batteryLevel: 87,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [34, 36, 38, 40, 36, 39, 38, 35],
+  //       },
+  //       {
+  //         id: "sur-s3",
+  //         name: "Sensor 3",
+  //         location: "OR 3",
+  //         locationAr: "غرفة العمليات 3",
+  //         currentNoise: 35,
+  //         status: "safe",
+  //         batteryLevel: 91,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [31, 33, 35, 37, 33, 36, 35, 32],
+  //       },
+  //       {
+  //         id: "sur-s4",
+  //         name: "Sensor 4",
+  //         location: "Prep Room",
+  //         locationAr: "غرفة التحضير",
+  //         currentNoise: 40,
+  //         status: "safe",
+  //         batteryLevel: 73,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [36, 38, 40, 42, 38, 41, 40, 37],
+  //       },
+  //       {
+  //         id: "sur-s5",
+  //         name: "Sensor 5",
+  //         location: "Recovery",
+  //         locationAr: "الإنعاش",
+  //         currentNoise: 28,
+  //         status: "safe",
+  //         batteryLevel: 84,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [24, 26, 28, 30, 26, 29, 28, 25],
+  //       },
+  //       {
+  //         id: "sur-s6",
+  //         name: "Sensor 6",
+  //         location: "Scrub Area",
+  //         locationAr: "منطقة التعقيم",
+  //         currentNoise: 36,
+  //         status: "safe",
+  //         batteryLevel: 79,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [32, 34, 36, 38, 34, 37, 36, 33],
+  //       },
+  //       {
+  //         id: "sur-s7",
+  //         name: "Sensor 7",
+  //         location: "Anesthesia Room",
+  //         locationAr: "غرفة التخدير",
+  //         currentNoise: 33,
+  //         status: "safe",
+  //         batteryLevel: 88,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [29, 31, 33, 35, 31, 34, 33, 30],
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: "pediatrics",
+  //     name: "Pediatrics",
+  //     nameAr: "الأطفال",
+  //     currentNoise: 48,
+  //     threshold: 35,
+  //     status: "critical",
+  //     hourlyData: [42, 45, 48, 52, 46, 49, 48, 44],
+  //     dailyData: [44, 45, 42, 52, 48, 49, 48],
+  //     tenMinData: [46, 47, 48, 49, 47, 48, 50, 51, 48, 47, 49, 48],
+  //     sixHourData: [44, 46, 50, 48],
+  //     sensors: [
+  //       {
+  //         id: "ped-s1",
+  //         name: "Sensor 1",
+  //         location: "Infant Ward",
+  //         locationAr: "جناح الرضع",
+  //         currentNoise: 52,
+  //         status: "critical",
+  //         batteryLevel: 89,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [46, 48, 52, 54, 50, 53, 52, 48],
+  //       },
+  //       {
+  //         id: "ped-s2",
+  //         name: "Sensor 2",
+  //         location: "Toddler Room",
+  //         locationAr: "غرفة الأطفال الصغار",
+  //         currentNoise: 58,
+  //         status: "critical",
+  //         batteryLevel: 76,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [52, 55, 58, 60, 56, 59, 58, 54],
+  //       },
+  //       {
+  //         id: "ped-s3",
+  //         name: "Sensor 3",
+  //         location: "Play Area",
+  //         locationAr: "منطقة اللعب",
+  //         currentNoise: 45,
+  //         status: "critical",
+  //         batteryLevel: 92,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [39, 42, 45, 48, 44, 47, 45, 41],
+  //       },
+  //       {
+  //         id: "ped-s4",
+  //         name: "Sensor 4",
+  //         location: "Family Room",
+  //         locationAr: "غرفة الأسرة",
+  //         currentNoise: 42,
+  //         status: "critical",
+  //         batteryLevel: 68,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [36, 39, 42, 45, 41, 44, 42, 38],
+  //       },
+  //       {
+  //         id: "ped-s5",
+  //         name: "Sensor 5",
+  //         location: "Nurses Station",
+  //         locationAr: "محطة التمريض",
+  //         currentNoise: 48,
+  //         status: "critical",
+  //         batteryLevel: 85,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [42, 45, 48, 51, 47, 50, 48, 44],
+  //       },
+  //       {
+  //         id: "ped-s6",
+  //         name: "Sensor 6",
+  //         location: "Treatment Room",
+  //         locationAr: "غرفة العلاج",
+  //         currentNoise: 38,
+  //         status: "critical",
+  //         batteryLevel: 71,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [32, 35, 38, 41, 37, 40, 38, 34],
+  //       },
+  //       {
+  //         id: "ped-s7",
+  //         name: "Sensor 7",
+  //         location: "Isolation Room",
+  //         locationAr: "غرفة العزل",
+  //         currentNoise: 35,
+  //         status: "safe",
+  //         batteryLevel: 94,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [29, 32, 35, 38, 34, 37, 35, 31],
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: "general",
+  //     name: "General Ward",
+  //     nameAr: "الأجنحة العامة",
+  //     currentNoise: 32,
+  //     threshold: 40,
+  //     status: "safe",
+  //     hourlyData: [28, 32, 35, 32, 30, 33, 32, 29],
+  //     dailyData: [30, 32, 28, 35, 32, 33, 32],
+  //     tenMinData: [30, 31, 32, 33, 31, 32, 34, 35, 32, 31, 33, 32],
+  //     sixHourData: [30, 31, 34, 32],
+  //     sensors: [
+  //       {
+  //         id: "gen-s1",
+  //         name: "Sensor 1",
+  //         location: "Ward A",
+  //         locationAr: "الجناح أ",
+  //         currentNoise: 35,
+  //         status: "safe",
+  //         batteryLevel: 88,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [31, 33, 35, 37, 33, 36, 35, 32],
+  //       },
+  //       {
+  //         id: "gen-s2",
+  //         name: "Sensor 2",
+  //         location: "Ward B",
+  //         locationAr: "الجناح ب",
+  //         currentNoise: 30,
+  //         status: "safe",
+  //         batteryLevel: 92,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [26, 28, 30, 32, 28, 31, 30, 27],
+  //       },
+  //       {
+  //         id: "gen-s3",
+  //         name: "Sensor 3",
+  //         location: "Ward C",
+  //         locationAr: "الجناح ج",
+  //         currentNoise: 28,
+  //         status: "safe",
+  //         batteryLevel: 75,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [24, 26, 28, 30, 26, 29, 28, 25],
+  //       },
+  //       {
+  //         id: "gen-s4",
+  //         name: "Sensor 4",
+  //         location: "Common Area",
+  //         locationAr: "المنطقة المشتركة",
+  //         currentNoise: 38,
+  //         status: "safe",
+  //         batteryLevel: 83,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [34, 36, 38, 40, 36, 39, 38, 35],
+  //       },
+  //       {
+  //         id: "gen-s5",
+  //         name: "Sensor 5",
+  //         location: "Nurses Station",
+  //         locationAr: "محطة التمريض",
+  //         currentNoise: 32,
+  //         status: "safe",
+  //         batteryLevel: 90,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [28, 30, 32, 34, 30, 33, 32, 29],
+  //       },
+  //       {
+  //         id: "gen-s6",
+  //         name: "Sensor 6",
+  //         location: "Visitor Area",
+  //         locationAr: "منطقة الزوار",
+  //         currentNoise: 36,
+  //         status: "safe",
+  //         batteryLevel: 67,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [32, 34, 36, 38, 34, 37, 36, 33],
+  //       },
+  //       {
+  //         id: "gen-s7",
+  //         name: "Sensor 7",
+  //         location: "Medication Room",
+  //         locationAr: "غرفة الأدوية",
+  //         currentNoise: 25,
+  //         status: "safe",
+  //         batteryLevel: 95,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [21, 23, 25, 27, 23, 26, 25, 22],
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     id: "radiology",
+  //     name: "Radiology",
+  //     nameAr: "الأشعة",
+  //     currentNoise: 42,
+  //     threshold: 45,
+  //     status: "safe",
+  //     hourlyData: [38, 42, 44, 42, 40, 43, 42, 39],
+  //     dailyData: [40, 42, 38, 44, 42, 43, 42],
+  //     tenMinData: [40, 41, 42, 43, 41, 42, 44, 45, 42, 41, 43, 42],
+  //     sixHourData: [40, 41, 44, 42],
+  //     sensors: [
+  //       {
+  //         id: "rad-s1",
+  //         name: "Sensor 1",
+  //         location: "X-Ray Room 1",
+  //         locationAr: "غرفة الأشعة السينية 1",
+  //         currentNoise: 45,
+  //         status: "safe",
+  //         batteryLevel: 86,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [41, 43, 45, 47, 43, 46, 45, 42],
+  //       },
+  //       {
+  //         id: "rad-s2",
+  //         name: "Sensor 2",
+  //         location: "X-Ray Room 2",
+  //         locationAr: "غرفة الأشعة السينية 2",
+  //         currentNoise: 48,
+  //         status: "critical",
+  //         batteryLevel: 79,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [44, 46, 48, 50, 46, 49, 48, 45],
+  //       },
+  //       {
+  //         id: "rad-s3",
+  //         name: "Sensor 3",
+  //         location: "CT Scan Room",
+  //         locationAr: "غرفة الأشعة المقطعية",
+  //         currentNoise: 52,
+  //         status: "critical",
+  //         batteryLevel: 91,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [48, 50, 52, 54, 50, 53, 52, 49],
+  //       },
+  //       {
+  //         id: "rad-s4",
+  //         name: "Sensor 4",
+  //         location: "MRI Room",
+  //         locationAr: "غرفة الرنين المغناطيسي",
+  //         currentNoise: 38,
+  //         status: "safe",
+  //         batteryLevel: 74,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [34, 36, 38, 40, 36, 39, 38, 35],
+  //       },
+  //       {
+  //         id: "rad-s5",
+  //         name: "Sensor 5",
+  //         location: "Waiting Area",
+  //         locationAr: "منطقة الانتظار",
+  //         currentNoise: 35,
+  //         status: "safe",
+  //         batteryLevel: 88,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [31, 33, 35, 37, 33, 36, 35, 32],
+  //       },
+  //       {
+  //         id: "rad-s6",
+  //         name: "Sensor 6",
+  //         location: "Control Room",
+  //         locationAr: "غرفة التحكم",
+  //         currentNoise: 40,
+  //         status: "safe",
+  //         batteryLevel: 82,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [36, 38, 40, 42, 38, 41, 40, 37],
+  //       },
+  //       {
+  //         id: "rad-s7",
+  //         name: "Sensor 7",
+  //         location: "Equipment Storage",
+  //         locationAr: "مخزن المعدات",
+  //         currentNoise: 32,
+  //         status: "safe",
+  //         batteryLevel: 65,
+  //         lastUpdate: "14:32",
+  //         hourlyData: [28, 30, 32, 34, 30, 33, 32, 29],
+  //       },
+  //     ],
+  //   },
+  // ]);
+
+  const [alerts] = useState<Alert[]>([
     {
       id: "1",
       department: "Emergency",
@@ -683,44 +688,41 @@ function App() {
     setLoginError("");
   };
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setCurrentTime(new Date());
+  //   }, 5000);
 
-      // Simulate real-time data updates
-      setDepartments((prev) =>
-        prev.map((dept) => ({
-          ...dept,
-          currentNoise: Math.max(
-            20,
-            dept.currentNoise + (Math.random() - 0.5) * 2
-          ),
-          status:
-            dept.currentNoise > dept.threshold * 1.2
-              ? "critical"
-              : dept.currentNoise > dept.threshold
-              ? "warning"
-              : "safe",
-          sensors: dept.sensors.map((sensor) => ({
-            ...sensor,
-            currentNoise:
-              sensor.status === "offline"
-                ? 0
-                : Math.max(15, sensor.currentNoise + (Math.random() - 0.5) * 3),
-            status:
-              sensor.status === "offline"
-                ? "offline"
-                : sensor.currentNoise > dept.threshold * 1.2
-                ? "critical"
-                : sensor.currentNoise > dept.threshold
-                ? "warning"
-                : "safe",
-          })),
-        }))
-      );
+  //   return () => clearInterval(timer);
+  // }, []);
+
+  useEffect(() => {
+    const fetchData = () => {
+      const config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: "https://sound-level-django-xkm4b.ondigitalocean.app/soundlevel/dashboard/",
+        headers: {},
+      };
+
+      axios
+        .request(config)
+        .then((response) => {
+          console.log("Fetched data:", response.data);
+          setDepartments(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    };
+
+    fetchData(); // أول مرة
+
+    const interval = setInterval(() => {
+      fetchData(); // كل 5 ثواني
     }, 5000);
 
-    return () => clearInterval(timer);
+    return () => clearInterval(interval); // تنظيف لما يتشال الكمبوننت
   }, []);
 
   const toggleDepartment = (deptId: string) => {
@@ -785,12 +787,6 @@ function App() {
     }
   };
 
-  const getBatteryColor = (level: number) => {
-    if (level > 50) return "text-green-600";
-    if (level > 20) return "text-yellow-600";
-    return "text-red-600";
-  };
-
   const getTimeFrameData = (dept: Department) => {
     switch (timeFrame) {
       case "10m":
@@ -824,9 +820,9 @@ function App() {
   const criticalDepartments = departments.filter(
     (d) => d.status === "critical"
   ).length;
-  const warningDepartments = departments.filter(
-    (d) => d.status === "warning"
-  ).length;
+  // const warningDepartments = departments.filter(
+  //   (d) => d.status === "warning"
+  // ).length;
   const avgNoise = Math.round(
     departments.reduce((sum, d) => sum + d.currentNoise, 0) / departments.length
   );
@@ -844,9 +840,11 @@ function App() {
     const min = Math.min(...data);
     const range = max - min || 1;
 
+    console.log("datasss", data);
+
     return (
       <div className="flex items-end h-6 sm:h-8 gap-0.5 sm:gap-1">
-        {data.map((value, index) => (
+        {data?.map((value, index) => (
           <div
             key={index}
             className={`w-1.5 sm:w-2 ${color} rounded-t-sm transition-all duration-300`}
@@ -858,6 +856,82 @@ function App() {
         ))}
       </div>
     );
+  };
+
+  console.log(departments, "departments");
+
+  const getSensoresStatus = (sensor: any) => {
+    console.log("sensor-------", sensor);
+
+    if (!sensor.records || sensor.records.length === 0) return 0;
+
+    const total = sensor.records.reduce((sum: any, record: any) => {
+      return sum + parseFloat(record.avg);
+    }, 0);
+
+    const average = total / sensor.records.length;
+    console.log("getSensoresAvg", average);
+    return average;
+  };
+
+  const getNoiseLevel = (house: any) => {
+    for (const sensor of house.sensors) {
+      if (!sensor.records || sensor.records.length === 0) continue;
+
+      const total = sensor.records.reduce((sum: number, record: any) => {
+        return sum + parseFloat(record.avg);
+      }, 0);
+
+      const average = total / sensor.records.length;
+
+      console.log(`Sensor ${sensor.name} avg: ${average}`);
+
+      // getSensoresStatus(sensor) >= sensor?.yellow &&
+      // getSensoresStatus(sensor) < sensor?.red
+      //   ? "warning"
+      //   : getSensoresStatus(sensor) >= sensor?.red
+      //   ? "critical"
+      //   : "safe";
+
+      console.log("average average", average);
+
+      if (average >= 100 && average <= 200) return "warning";
+      if (average >= 200) return "critical";
+    }
+
+    return "safe";
+  };
+
+  const getNoiseAverageDb = (house: any) => {
+    let totalDb = 0;
+    let totalRecords = 0;
+
+    for (const sensor of house.sensors) {
+      if (!sensor.records || sensor.records.length === 0) continue;
+
+      for (const record of sensor.records) {
+        totalDb += parseFloat(record.avg);
+        totalRecords++;
+      }
+    }
+
+    if (totalRecords === 0) return 0;
+
+    const averageDb = totalDb / totalRecords;
+    return averageDb;
+  };
+
+  const departmentStatus = (department: any) => {
+    // departments.map((house: any) => ({
+    //   name: house.name,
+    //   noiseLevel: getNoiseLevel(house),
+    // }));
+
+    console.log("departmentStatus", getNoiseLevel(department));
+    return {
+      name: department.name,
+      noiseLevel: getNoiseLevel(department),
+    };
   };
 
   return (
@@ -1150,11 +1224,11 @@ function App() {
               </div>
 
               <div className="space-y-3 sm:space-y-4">
-                {departments.map((dept) => (
+                {departments?.map((dept: any) => (
                   <div
                     key={dept.id}
                     className={`rounded-lg border-2 transition-all duration-300 ${getStatusColor(
-                      dept.status
+                      departmentStatus(dept).noiseLevel
                     )}`}
                   >
                     {/* Department Header */}
@@ -1174,14 +1248,14 @@ function App() {
                               )}
                             </h3>
                             <p className="text-xs sm:text-sm text-gray-600">
-                              {dept.nameAr}
+                              {dept.name_en}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
                           <div className="text-left sm:text-right">
                             <div className="text-lg sm:text-2xl font-bold text-gray-900">
-                              {Math.round(dept.currentNoise)} dB
+                              {Math.round(getNoiseAverageDb(dept))} dB
                             </div>
                             <div className="text-xs text-gray-500">
                               Limit: {dept.threshold} dB
@@ -1189,8 +1263,10 @@ function App() {
                           </div>
                           <div className="w-16 sm:w-24">
                             <MiniChart
-                              data={getTimeFrameData(dept)}
-                              color={getProgressColor(dept.status)}
+                              data={[22, 24, 26, 28, 30, 32, 34, 36, 38, 40]}
+                              color={getProgressColor(
+                                departmentStatus(dept).noiseLevel
+                              )}
                             />
                           </div>
                         </div>
@@ -1227,11 +1303,16 @@ function App() {
                           Individual Sensors ({dept.sensors.length})
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {dept.sensors.map((sensor) => (
+                          {dept.sensors.map((sensor: any) => (
                             <div
                               key={sensor.id}
                               className={`p-3 rounded-lg border ${getStatusColor(
-                                sensor.status
+                                getSensoresStatus(sensor) >= sensor?.yellow &&
+                                  getSensoresStatus(sensor) < sensor?.red
+                                  ? "warning"
+                                  : getSensoresStatus(sensor) >= sensor?.red
+                                  ? "critical"
+                                  : "safe"
                               )}`}
                             >
                               <div className="flex items-start justify-between mb-2">
@@ -1240,20 +1321,24 @@ function App() {
                                     <h5 className="text-sm font-medium text-gray-800">
                                       {sensor.name}
                                     </h5>
+                                    {}
                                     {getSensorStatusIcon(sensor.status)}
                                   </div>
                                   <p className="text-xs text-gray-600">
-                                    {sensor.location}
+                                    {sensor.name_en}
                                   </p>
-                                  <p className="text-xs text-gray-500">
+                                  {/* <p className="text-xs text-gray-500">
                                     {sensor.locationAr}
-                                  </p>
+                                    asdsad
+                                  </p> */}
                                 </div>
                                 <div className="text-right">
                                   <div className="text-lg font-bold text-gray-900">
                                     {sensor.status === "offline"
                                       ? "--"
-                                      : Math.round(sensor.currentNoise)}{" "}
+                                      : Math.round(
+                                          getSensoresStatus(sensor)
+                                        )}{" "}
                                     dB
                                   </div>
                                   <div className="text-xs text-gray-500">
@@ -1261,7 +1346,7 @@ function App() {
                                   </div>
                                 </div>
                               </div>
-
+                              {/* 
                               <div className="flex items-center justify-between text-xs text-gray-600 mb-2">
                                 <span>Battery</span>
                                 <span
@@ -1271,9 +1356,9 @@ function App() {
                                 >
                                   {sensor.batteryLevel}%
                                 </span>
-                              </div>
+                              </div> */}
 
-                              <div className="w-full bg-gray-200 rounded-full h-1">
+                              {/* <div className="w-full bg-gray-200 rounded-full h-1">
                                 <div
                                   className={`h-1 rounded-full transition-all duration-500 ${getProgressColor(
                                     sensor.status
@@ -1288,14 +1373,16 @@ function App() {
                                           )}%`,
                                   }}
                                 />
-                              </div>
+                              </div> */}
 
                               <div className="mt-2">
                                 <MiniChart
-                                  data={sensor.hourlyData.slice(
-                                    -getTimeFrameData(dept).length
+                                  data={[
+                                    22, 24, 26, 28, 30, 32, 34, 36, 38, 40,
+                                  ]}
+                                  color={getProgressColor(
+                                    departmentStatus(dept).noiseLevel
                                   )}
-                                  color={getProgressColor(sensor.status)}
                                 />
                               </div>
                             </div>
