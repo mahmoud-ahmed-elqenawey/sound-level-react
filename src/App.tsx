@@ -936,6 +936,27 @@ function App() {
     };
   };
 
+  const getSensorAvgValues = (house: any, sensorId: any) => {
+    const sensor = house.sensors.find((s: any) => s.id === sensorId);
+
+    if (!sensor || !sensor.records || sensor.records.length === 0) {
+      return []; // مفيش بيانات نرجع array فاضية
+    }
+
+    return sensor.records.map((record: any) => parseFloat(record.avg));
+  };
+
+  const getAllSensorsAvgValues = (house: any) => {
+    return house.sensors.map((sensor: any) => {
+      const values = sensor.records.map((record: any) =>
+        parseFloat(record.avg)
+      );
+      const sum = values.reduce((acc: any, val: any) => acc + val, 0);
+      const avg = values.length > 0 ? sum / values.length : 0;
+      return Math.round(avg * 100) / 100; // تقريبه إلى رقم عشريين
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
       {/* Header */}
@@ -975,7 +996,7 @@ function App() {
               </div>
 
               {/* View mode buttons */}
-              <div className="flex flex-col sm:flex-row gap-2">
+              {/* <div className="flex flex-col sm:flex-row gap-2">
                 <div className="text-xs text-gray-500 hidden sm:block self-center mr-2">
                   Time Frame:
                 </div>
@@ -1021,7 +1042,7 @@ function App() {
                     1d
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               {/* Mobile User Info */}
               <div className="sm:hidden flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
@@ -1259,13 +1280,13 @@ function App() {
                             <div className="text-lg sm:text-2xl font-bold text-gray-900">
                               {Math.round(getNoiseAverageDb(dept))} dB
                             </div>
-                            <div className="text-xs text-gray-500">
+                            {/* <div className="text-xs text-gray-500">
                               Limit: {dept.threshold} dB
-                            </div>
+                            </div> */}
                           </div>
                           <div className="w-16 sm:w-24">
                             <MiniChart
-                              data={[22, 24, 26, 28, 30, 32, 34, 36, 38, 40]}
+                              data={getAllSensorsAvgValues(dept)}
                               color={getProgressColor(
                                 departmentStatus(dept).noiseLevel
                               )}
@@ -1379,9 +1400,7 @@ function App() {
 
                               <div className="mt-2">
                                 <MiniChart
-                                  data={[
-                                    22, 24, 26, 28, 30, 32, 34, 36, 38, 40,
-                                  ]}
+                                  data={getSensorAvgValues(dept, sensor.id)}
                                   color={getProgressColor(
                                     departmentStatus(dept).noiseLevel
                                   )}
