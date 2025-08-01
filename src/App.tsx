@@ -1331,12 +1331,15 @@ function App() {
                             <div
                               key={sensor.id}
                               className={`p-3 rounded-lg border ${getStatusColor(
-                                getSensoresStatus(sensor) >= sensor?.yellow &&
-                                  getSensoresStatus(sensor) < sensor?.red
-                                  ? "warning"
-                                  : getSensoresStatus(sensor) >= sensor?.red
-                                  ? "critical"
-                                  : "safe"
+                                sensor.is_active
+                                  ? getSensoresStatus(sensor) >=
+                                      sensor?.yellow &&
+                                    getSensoresStatus(sensor) < sensor?.red
+                                    ? "warning"
+                                    : getSensoresStatus(sensor) >= sensor?.red
+                                    ? "critical"
+                                    : "safe"
+                                  : "offline"
                               )}`}
                             >
                               <div className="flex items-start justify-between mb-2">
@@ -1358,7 +1361,7 @@ function App() {
                                 </div>
                                 <div className="text-right">
                                   <div className="text-lg font-bold text-gray-900">
-                                    {sensor.status === "offline"
+                                    {!sensor.is_active
                                       ? "--"
                                       : Math.round(
                                           getSensoresStatus(sensor)
@@ -1487,12 +1490,18 @@ function App() {
               <div className="space-y-3">
                 {departments.map((dept: any) => {
                   const onlineSensors = dept.sensors.filter(
-                    (s: any) => s.status !== "offline"
+                    (s: any) => s.is_active
                   ).length;
                   const criticalSensors = dept.sensors.filter(
-                    (s: any) => s.status === "critical"
+                    (s: any) => getSensoresStatus(s) >= s.red && "critical"
                   ).length;
 
+                  //  getSensoresStatus(sensor) >= sensor?.yellow &&
+                  //  getSensoresStatus(sensor) < sensor?.red
+                  //    ? "warning"
+                  //    : getSensoresStatus(sensor) >= sensor?.red
+                  //    ? "critical"
+                  //    : "safe";
                   return (
                     <div
                       key={dept.id}
@@ -1519,15 +1528,23 @@ function App() {
                               <div
                                 key={idx}
                                 className={`w-2 h-2 rounded-full ${
-                                  sensor.status === "offline"
+                                  !sensor.is_active
                                     ? "bg-gray-400"
-                                    : sensor.status === "critical"
+                                    : getSensoresStatus(sensor) >= sensor.red &&
+                                      "critical"
                                     ? "bg-red-500"
-                                    : sensor.status === "warning"
+                                    : getSensoresStatus(sensor) >=
+                                        sensor.yellow &&
+                                      getSensoresStatus(sensor) < sensor.red &&
+                                      "warning"
                                     ? "bg-yellow-500"
                                     : "bg-green-500"
                                 }`}
-                                title={`${sensor.name}: ${sensor.status}`}
+                                title={`${sensor.name}: ${
+                                  getSensoresStatus(sensor) >= sensor.red
+                                    ? "Critical"
+                                    : "Safe"
+                                }`}
                               />
                             ))}
                         </div>
@@ -1575,10 +1592,10 @@ function App() {
           <div className="space-y-3">
             {departments.map((dept: any) => {
               const onlineSensors = dept.sensors.filter(
-                (s: any) => s.status !== "offline"
+                (s: any) => s.is_active
               ).length;
               const criticalSensors = dept.sensors.filter(
-                (s: any) => s.status === "critical"
+                (s: any) => getSensoresStatus(s) >= s.red && "critical"
               ).length;
 
               return (
@@ -1605,11 +1622,14 @@ function App() {
                         <div
                           key={idx}
                           className={`w-2 h-2 rounded-full ${
-                            sensor.status === "offline"
+                            !sensor.is_active
                               ? "bg-gray-400"
-                              : sensor.status === "critical"
+                              : getSensoresStatus(sensor) >= sensor.red &&
+                                "critical"
                               ? "bg-red-500"
-                              : sensor.status === "warning"
+                              : getSensoresStatus(sensor) >= sensor.yellow &&
+                                getSensoresStatus(sensor) < sensor.red &&
+                                "warning"
                               ? "bg-yellow-500"
                               : "bg-green-500"
                           }`}
