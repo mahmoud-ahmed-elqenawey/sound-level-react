@@ -13,31 +13,31 @@ import {
 import LoginForm from "./pages/Login";
 import axios from "axios";
 
-interface Sensor {
-  id: string;
-  name: string;
-  location: string;
-  locationAr: string;
-  currentNoise: number;
-  status: "safe" | "warning" | "critical" | "offline";
-  batteryLevel: number;
-  lastUpdate: string;
-  hourlyData: number[];
-}
+// interface Sensor {
+//   id: string;
+//   name: string;
+//   location: string;
+//   locationAr: string;
+//   currentNoise: number;
+//   status: "safe" | "warning" | "critical" | "offline";
+//   batteryLevel: number;
+//   lastUpdate: string;
+//   hourlyData: number[];
+// }
 
-interface Department {
-  id: string;
-  name: string;
-  nameAr: string;
-  currentNoise: number;
-  threshold: number;
-  status: "safe" | "warning" | "critical";
-  hourlyData: number[];
-  dailyData: number[];
-  tenMinData: number[];
-  sixHourData: number[];
-  sensors: Sensor[];
-}
+// interface Department {
+//   id: string;
+//   name: string;
+//   nameAr: string;
+//   currentNoise: number;
+//   threshold: number;
+//   status: "safe" | "warning" | "critical";
+//   hourlyData: number[];
+//   dailyData: number[];
+//   tenMinData: number[];
+//   sixHourData: number[];
+//   sensors: Sensor[];
+// }
 
 interface Alert {
   id: string;
@@ -649,7 +649,7 @@ function App() {
     },
   ]);
 
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, _] = useState(new Date());
   const [timeFrame, setTimeFrame] = useState<"10m" | "1h" | "6h" | "1d">("1h");
   const [expandedDepartments, setExpandedDepartments] = useState<Set<string>>(
     new Set()
@@ -787,20 +787,20 @@ function App() {
     }
   };
 
-  const getTimeFrameData = (dept: Department) => {
-    switch (timeFrame) {
-      case "10m":
-        return dept.tenMinData;
-      case "1h":
-        return dept.hourlyData;
-      case "6h":
-        return dept.sixHourData;
-      case "1d":
-        return dept.dailyData;
-      default:
-        return dept.hourlyData;
-    }
-  };
+  // const getTimeFrameData = (dept: Department) => {
+  //   switch (timeFrame) {
+  //     case "10m":
+  //       return dept.tenMinData;
+  //     case "1h":
+  //       return dept.hourlyData;
+  //     case "6h":
+  //       return dept.sixHourData;
+  //     case "1d":
+  //       return dept.dailyData;
+  //     default:
+  //       return dept.hourlyData;
+  //   }
+  // };
 
   const getTimeFrameLabel = () => {
     switch (timeFrame) {
@@ -818,20 +818,22 @@ function App() {
   };
 
   const criticalDepartments = departments.filter(
-    (d) => d.status === "critical"
+    (d: any) => d.status === "critical"
   ).length;
   // const warningDepartments = departments.filter(
   //   (d) => d.status === "warning"
   // ).length;
   const avgNoise = Math.round(
-    departments.reduce((sum, d) => sum + d.currentNoise, 0) / departments.length
+    departments.reduce((sum: any, d: any) => sum + d.currentNoise, 0) /
+      departments.length
   );
   const totalSensors = departments.reduce(
-    (sum, d) => sum + d.sensors.length,
+    (sum: any, d: any) => sum + d.sensors.length,
     0
   );
   const offlineSensors = departments.reduce(
-    (sum, d) => sum + d.sensors.filter((s) => s.status === "offline").length,
+    (sum: any, d: any) =>
+      sum + d.sensors.filter((s: any) => s.status === "offline").length,
     0
   );
 
@@ -1457,12 +1459,12 @@ function App() {
               </h2>
 
               <div className="space-y-3">
-                {departments.map((dept) => {
+                {departments.map((dept: any) => {
                   const onlineSensors = dept.sensors.filter(
-                    (s) => s.status !== "offline"
+                    (s: any) => s.status !== "offline"
                   ).length;
                   const criticalSensors = dept.sensors.filter(
-                    (s) => s.status === "critical"
+                    (s: any) => s.status === "critical"
                   ).length;
 
                   return (
@@ -1485,21 +1487,23 @@ function App() {
                           </span>
                         )}
                         <div className="flex gap-1">
-                          {dept.sensors.slice(0, 7).map((sensor, idx) => (
-                            <div
-                              key={idx}
-                              className={`w-2 h-2 rounded-full ${
-                                sensor.status === "offline"
-                                  ? "bg-gray-400"
-                                  : sensor.status === "critical"
-                                  ? "bg-red-500"
-                                  : sensor.status === "warning"
-                                  ? "bg-yellow-500"
-                                  : "bg-green-500"
-                              }`}
-                              title={`${sensor.name}: ${sensor.status}`}
-                            />
-                          ))}
+                          {dept.sensors
+                            .slice(0, 7)
+                            .map((sensor: any, idx: any) => (
+                              <div
+                                key={idx}
+                                className={`w-2 h-2 rounded-full ${
+                                  sensor.status === "offline"
+                                    ? "bg-gray-400"
+                                    : sensor.status === "critical"
+                                    ? "bg-red-500"
+                                    : sensor.status === "warning"
+                                    ? "bg-yellow-500"
+                                    : "bg-green-500"
+                                }`}
+                                title={`${sensor.name}: ${sensor.status}`}
+                              />
+                            ))}
                         </div>
                       </div>
                     </div>
@@ -1543,12 +1547,12 @@ function App() {
           </h2>
 
           <div className="space-y-3">
-            {departments.map((dept) => {
+            {departments.map((dept: any) => {
               const onlineSensors = dept.sensors.filter(
-                (s) => s.status !== "offline"
+                (s: any) => s.status !== "offline"
               ).length;
               const criticalSensors = dept.sensors.filter(
-                (s) => s.status === "critical"
+                (s: any) => s.status === "critical"
               ).length;
 
               return (
@@ -1571,7 +1575,7 @@ function App() {
                       </span>
                     )}
                     <div className="flex gap-1">
-                      {dept.sensors.slice(0, 7).map((sensor, idx) => (
+                      {dept.sensors.slice(0, 7).map((sensor: any, idx: any) => (
                         <div
                           key={idx}
                           className={`w-2 h-2 rounded-full ${
