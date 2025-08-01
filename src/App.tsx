@@ -650,7 +650,7 @@ function App() {
   ]);
 
   const [currentTime, _] = useState(new Date());
-  const [timeFrame, setTimeFrame] = useState<"10m" | "1h" | "6h" | "1d">("1h");
+  const [timeFrame] = useState<"10m" | "1h" | "6h" | "1d">("1h");
   const [expandedDepartments, setExpandedDepartments] = useState<Set<string>>(
     new Set()
   );
@@ -1402,7 +1402,13 @@ function App() {
                                 <MiniChart
                                   data={getSensorAvgValues(dept, sensor.id)}
                                   color={getProgressColor(
-                                    departmentStatus(dept).noiseLevel
+                                    getSensoresStatus(sensor) >=
+                                      sensor?.yellow &&
+                                      getSensoresStatus(sensor) < sensor?.red
+                                      ? "warning"
+                                      : getSensoresStatus(sensor) >= sensor?.red
+                                      ? "critical"
+                                      : "safe"
                                   )}
                                 />
                               </div>
