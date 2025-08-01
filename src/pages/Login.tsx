@@ -19,7 +19,6 @@ export default function Login() {
   const onSubmit = async (data: LoginFormInputs) => {
     const { email, password } = data;
 
-    // تحقق وهمي: أي إيميل + أي كلمة سر طولها > 3 تعتبر صحيحة
     if (email && password.length >= 4) {
       // محاكاة التأخير
       await new Promise((resolve) => setTimeout(resolve, 500));
