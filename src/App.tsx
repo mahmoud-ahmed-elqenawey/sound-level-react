@@ -876,7 +876,7 @@ function App() {
     return average;
   };
 
-  const getNoiseLevel = (house: any) => {
+  const getNoiseLevel = (house: any, red: any, yellow: any) => {
     for (const sensor of house.sensors) {
       if (!sensor.records || sensor.records.length === 0) continue;
 
@@ -897,8 +897,8 @@ function App() {
 
       console.log("average average", average);
 
-      if (average >= 100 && average <= 200) return "warning";
-      if (average >= 200) return "critical";
+      if (average >= yellow && average <= red) return "warning";
+      if (average >= red) return "critical";
     }
 
     return "safe";
@@ -923,16 +923,16 @@ function App() {
     return averageDb;
   };
 
-  const departmentStatus = (department: any) => {
+  const departmentStatus = (department: any, red: any, yellow: any) => {
     // departments.map((house: any) => ({
     //   name: house.name,
     //   noiseLevel: getNoiseLevel(house),
     // }));
 
-    console.log("departmentStatus", getNoiseLevel(department));
+    // console.log("departmentStatus", getNoiseLevel(department, red, yellow));
     return {
       name: department.name,
-      noiseLevel: getNoiseLevel(department),
+      noiseLevel: getNoiseLevel(department, red, yellow),
     };
   };
 
@@ -1251,7 +1251,7 @@ function App() {
                   <div
                     key={dept.id}
                     className={`rounded-lg border-2 transition-all duration-300 ${getStatusColor(
-                      departmentStatus(dept).noiseLevel
+                      departmentStatus(dept, dept.red, dept.yellow).noiseLevel
                     )}`}
                   >
                     {/* Department Header */}
@@ -1288,18 +1288,19 @@ function App() {
                             <MiniChart
                               data={getAllSensorsAvgValues(dept)}
                               color={getProgressColor(
-                                departmentStatus(dept).noiseLevel
+                                departmentStatus(dept, dept.red, dept.yellow)
+                                  .noiseLevel
                               )}
                             />
                           </div>
                         </div>
                       </div>
 
-                      <div className="mt-2 sm:mt-3">
+                      {/* <div className="mt-2 sm:mt-3">
                         <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
                           <span>Noise Level</span>
                           <span>
-                            {Math.round((dept.currentNoise / 80) * 100)}%
+                            {Math.round((getNoiseAverageDb(dept) / 80) * 100)}%
                           </span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2">
@@ -1309,13 +1310,13 @@ function App() {
                             )}`}
                             style={{
                               width: `${Math.min(
-                                (dept.currentNoise / 80) * 100,
+                                (getNoiseAverageDb(dept) / 80) * 100,
                                 100
                               )}%`,
                             }}
                           />
                         </div>
-                      </div>
+                      </div> */}
                     </div>
 
                     {/* Expanded Sensor Details */}
