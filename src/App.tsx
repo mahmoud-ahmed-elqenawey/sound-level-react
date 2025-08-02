@@ -155,11 +155,11 @@ function App() {
 
   const getProgressColor = (status: string) => {
     switch (status) {
-      case "safe":
+      case "green":
         return "bg-green-500";
-      case "warning":
+      case "yellow":
         return "bg-yellow-500";
-      case "critical":
+      case "red":
         return "bg-red-500";
       case "offline":
         return "bg-gray-400";
@@ -179,12 +179,17 @@ function App() {
     );
   }
 
-  const getSensorStatusIcon = (status: string) => {
-    switch (status) {
-      case "offline":
-        return <WifiOff className="h-3 w-3 text-gray-500" />;
-      default:
-        return <Wifi className="h-3 w-3 text-green-500" />;
+  const getSensorStatusIcon = (signal?: number) => {
+    if (signal === undefined || signal === null) {
+      return <WifiOff className="h-3 w-3 text-gray-500" />;
+    }
+
+    if (signal < 20) {
+      return <Wifi className="h-3 w-3 text-red-500" />;
+    } else if (signal < 40) {
+      return <Wifi className="h-3 w-3 text-yellow-500" />;
+    } else {
+      return <Wifi className="h-3 w-3 text-green-500" />;
     }
   };
 
@@ -277,33 +282,33 @@ function App() {
     return average;
   };
 
-  const getNoiseLevel = (house: any, red: any, yellow: any) => {
-    for (const sensor of house.sensors) {
-      if (!sensor.records || sensor.records.length === 0) continue;
+  // const getNoiseLevel = (house: any, red: any, yellow: any) => {
+  //   for (const sensor of house.sensors) {
+  //     if (!sensor.records || sensor.records.length === 0) continue;
 
-      const total = sensor.records.reduce((sum: number, record: any) => {
-        return sum + parseFloat(record.avg);
-      }, 0);
+  //     const total = sensor.records.reduce((sum: number, record: any) => {
+  //       return sum + parseFloat(record.avg);
+  //     }, 0);
 
-      const average = total / sensor.records.length;
+  //     const average = total / sensor.records.length;
 
-      console.log(`Sensor ${sensor.name} avg: ${average}`);
+  //     console.log(`Sensor ${sensor.name} avg: ${average}`);
 
-      // getSensoresStatus(sensor) >= sensor?.yellow &&
-      // getSensoresStatus(sensor) < sensor?.red
-      //   ? "warning"
-      //   : getSensoresStatus(sensor) >= sensor?.red
-      //   ? "critical"
-      //   : "safe";
+  //     // getSensoresStatus(sensor) >= sensor?.yellow &&
+  //     // getSensoresStatus(sensor) < sensor?.red
+  //     //   ? "warning"
+  //     //   : getSensoresStatus(sensor) >= sensor?.red
+  //     //   ? "critical"
+  //     //   : "safe";
 
-      console.log("average average", average);
+  //     console.log("average average", average);
 
-      if (average >= yellow && average <= red) return "warning";
-      if (average >= red) return "critical";
-    }
+  //     if (average >= yellow && average <= red) return "warning";
+  //     if (average >= red) return "critical";
+  //   }
 
-    return "safe";
-  };
+  //   return "safe";
+  // };
 
   // const getNoiseAverageDb = (house: any) => {
   //   let totalDb = 0;
@@ -324,18 +329,18 @@ function App() {
   //   return averageDb;
   // };
 
-  const departmentStatus = (department: any, red: any, yellow: any) => {
-    // departments.map((house: any) => ({
-    //   name: house.name,
-    //   noiseLevel: getNoiseLevel(house),
-    // }));
+  // const departmentStatus = (department: any, red: any, yellow: any) => {
+  //   // departments.map((house: any) => ({
+  //   //   name: house.name,
+  //   //   noiseLevel: getNoiseLevel(house),
+  //   // }));
 
-    // console.log("departmentStatus", getNoiseLevel(department, red, yellow));
-    return {
-      name: department.name,
-      noiseLevel: getNoiseLevel(department, red, yellow),
-    };
-  };
+  //   // console.log("departmentStatus", getNoiseLevel(department, red, yellow));
+  //   return {
+  //     name: department.name,
+  //     noiseLevel: getNoiseLevel(department, red, yellow),
+  //   };
+  // };
 
   const getSensorAvgValues = (house: any, sensorId: any) => {
     const sensor = house.sensors.find((s: any) => s.id === sensorId);
@@ -688,36 +693,33 @@ function App() {
                           <div className="w-16 sm:w-24">
                             <MiniChart
                               data={getAllSensorsAvgValues(dept)}
-                              color={getProgressColor(
-                                departmentStatus(dept, dept.red, dept.yellow)
-                                  .noiseLevel
-                              )}
+                              color={getProgressColor(dept.color)}
                             />
                           </div>
                         </div>
                       </div>
 
-                      {/* <div className="mt-2 sm:mt-3">
+                      <div className="mt-2 sm:mt-3">
                         <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
                           <span>Noise Level</span>
                           <span>
-                            {Math.round((getNoiseAverageDb(dept) / 80) * 100)}%
+                            {Math.round((dept?.avg / dept.red) * 100)}%
                           </span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2">
                           <div
                             className={`h-1.5 sm:h-2 rounded-full transition-all duration-500 ${getProgressColor(
-                              dept.status
+                              dept.color
                             )}`}
                             style={{
                               width: `${Math.min(
-                                (getNoiseAverageDb(dept) / 80) * 100,
+                                (dept?.avg / dept.red) * 100,
                                 100
                               )}%`,
                             }}
                           />
                         </div>
-                      </div> */}
+                      </div>
                     </div>
 
                     {/* Expanded Sensor Details */}
@@ -732,15 +734,7 @@ function App() {
                             <div
                               key={sensor.id}
                               className={`p-3 rounded-lg border ${getStatusColor(
-                                sensor.is_active
-                                  ? getSensoresStatus(sensor) >=
-                                      sensor?.yellow &&
-                                    getSensoresStatus(sensor) < sensor?.red
-                                    ? "warning"
-                                    : getSensoresStatus(sensor) >= sensor?.red
-                                    ? "critical"
-                                    : "safe"
-                                  : "offline"
+                                sensor.is_active ? sensor.color : "offline"
                               )}`}
                             >
                               <div className="flex items-start justify-between mb-2">
@@ -749,8 +743,9 @@ function App() {
                                     <h5 className="text-sm font-medium text-gray-800">
                                       {sensor.name}
                                     </h5>
-                                    {}
-                                    {getSensorStatusIcon(sensor.status)}
+                                    {getSensorStatusIcon(
+                                      sensor.records.at(-1)?.wifi_signal
+                                    )}
                                   </div>
                                   <p className="text-xs text-gray-600">
                                     {sensor.name_en}
@@ -764,10 +759,8 @@ function App() {
                                   <div className="text-lg font-bold text-gray-900">
                                     {!sensor.is_active
                                       ? "--"
-                                      : Math.round(
-                                          getSensoresStatus(sensor)
-                                        )}{" "}
-                                    dB
+                                      : Math.round(sensor.avg)}{" "}
+                                    LV
                                   </div>
                                   {/* <div className="text-xs text-gray-500">
                                     {sensor.lastUpdate}
@@ -811,16 +804,7 @@ function App() {
                                       : [10, 9, 10, 6, 10, 8, 10, 6, 10, 9]
                                   }
                                   color={getProgressColor(
-                                    sensor.is_active
-                                      ? getSensoresStatus(sensor) >=
-                                          sensor?.yellow &&
-                                        getSensoresStatus(sensor) < sensor?.red
-                                        ? "warning"
-                                        : getSensoresStatus(sensor) >=
-                                          sensor?.red
-                                        ? "critical"
-                                        : "safe"
-                                      : "offline"
+                                    sensor.is_active ? sensor.color : "offline"
                                   )}
                                 />
                               </div>
@@ -901,15 +885,9 @@ function App() {
                     (s: any) => s.is_active
                   ).length;
                   const criticalSensors = dept.sensors.filter(
-                    (s: any) => getSensoresStatus(s) >= s.red && "critical"
+                    (s: any) => s.color === "red" && "red"
                   ).length;
 
-                  //  getSensoresStatus(sensor) >= sensor?.yellow &&
-                  //  getSensoresStatus(sensor) < sensor?.red
-                  //    ? "warning"
-                  //    : getSensoresStatus(sensor) >= sensor?.red
-                  //    ? "critical"
-                  //    : "safe";
                   return (
                     <div
                       key={dept.id}
@@ -938,20 +916,14 @@ function App() {
                                 className={`w-2 h-2 rounded-full ${
                                   !sensor.is_active
                                     ? "bg-gray-400"
-                                    : getSensoresStatus(sensor) >= sensor.red &&
-                                      "critical"
+                                    : sensor.color === "red"
                                     ? "bg-red-500"
-                                    : getSensoresStatus(sensor) >=
-                                        sensor.yellow &&
-                                      getSensoresStatus(sensor) < sensor.red &&
-                                      "warning"
+                                    : sensor.color === "yellow"
                                     ? "bg-yellow-500"
                                     : "bg-green-500"
                                 }`}
                                 title={`${sensor.name}: ${
-                                  getSensoresStatus(sensor) >= sensor.red
-                                    ? "Critical"
-                                    : "Safe"
+                                  sensor.color === "red" ? "Critical" : "Safe"
                                 }`}
                               />
                             ))}
@@ -979,9 +951,13 @@ function App() {
                 <button className="w-full p-2 sm:p-3 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm sm:text-base font-medium transition-colors">
                   Configure Alerts
                 </button>
-                <button className="w-full p-2 sm:p-3 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-lg text-sm sm:text-base font-medium transition-colors">
+                <a
+                  target="_blank"
+                  href="https://sound-level-dashboard.vision-jo.com/admin/soundlevel/"
+                  className="w-full flex items-center justify-center p-2 sm:p-3 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-lg text-sm sm:text-base font-medium transition-colors"
+                >
                   Sensor Maintenance
-                </button>
+                </a>
               </div>
             </div>
           </div>
