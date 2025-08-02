@@ -65,6 +65,7 @@ function App() {
     setIsAuthenticated(false);
     setUser(null);
     setLoginError("");
+    localStorage.removeItem("token");
   };
 
   // useEffect(() => {
@@ -407,9 +408,24 @@ function App() {
                 </div>
                 <div className="h-8 sm:h-12 w-px bg-gray-200" />
               </div>
-
+              <div className="flex flex-col gap-3 items-center justify-between border-gray-100">
+                <div className="flex items-center gap-2">
+                  <div className="text-sm font-medium text-gray-800">
+                    Mahmoud
+                  </div>
+                  <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full capitalize">
+                    Doctor
+                  </span>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-1 text-sm bg-red-100 hover:bg-red-200 text-red-700 rounded-md transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
               {/* View mode buttons */}
-              <div className="flex flex-col sm:flex-row gap-2">
+              {/* <div className="flex flex-col sm:flex-row gap-2">
                 <div className="text-xs text-gray-500 hidden sm:block self-center mr-2">
                   Time Frame:
                 </div>
@@ -455,10 +471,10 @@ function App() {
                     1d
                   </button>
                 </div>
-              </div>
+              </div> */}
 
               {/* Mobile User Info */}
-              <div className="sm:hidden flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+              {/* <div className="sm:hidden flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
                 <div className="flex items-center gap-2">
                   <div className="text-sm font-medium text-gray-800">
                     {user?.username}
@@ -473,7 +489,7 @@ function App() {
                 >
                   Logout
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

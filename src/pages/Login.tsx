@@ -126,7 +126,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, error, isLoading }) => {
           </form>
 
           {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+          {/* <div className="mt-6 p-4 bg-blue-50 rounded-lg">
             <p className="text-sm font-medium text-blue-800 mb-2">
               Demo Credentials:
             </p>
@@ -141,7 +141,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, error, isLoading }) => {
                 <strong>Nurse:</strong> nurse / nurse123
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Footer */}
