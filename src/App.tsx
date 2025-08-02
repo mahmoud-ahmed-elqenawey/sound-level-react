@@ -12,16 +12,6 @@ import {
 import LoginForm from "./pages/Login";
 import axios from "axios";
 
-interface Alert {
-  id: string;
-  department: string;
-  departmentAr: string;
-  sensor?: string;
-  level: number;
-  timestamp: string;
-  severity: "warning" | "critical";
-}
-
 interface User {
   username: string;
   role: "admin" | "doctor" | "nurse";
@@ -228,25 +218,25 @@ function App() {
     }
   };
 
-  const criticalDepartments = departments.filter(
-    (d: any) => d.status === "critical"
-  ).length;
-  // const warningDepartments = departments.filter(
-  //   (d) => d.status === "warning"
+  // const criticalDepartments = departments.filter(
+  //   (d: any) => d.status === "critical"
   // ).length;
-  const avgNoise = Math.round(
-    departments.reduce((sum: any, d: any) => sum + d.currentNoise, 0) /
-      departments.length
-  );
-  const totalSensors = departments.reduce(
-    (sum: any, d: any) => sum + d.sensors.length,
-    0
-  );
-  const offlineSensors = departments.reduce(
-    (sum: any, d: any) =>
-      sum + d.sensors.filter((s: any) => s.status === "offline").length,
-    0
-  );
+  // // const warningDepartments = departments.filter(
+  // //   (d) => d.status === "warning"
+  // // ).length;
+  // const avgNoise = Math.round(
+  //   departments.reduce((sum: any, d: any) => sum + d.currentNoise, 0) /
+  //     departments.length
+  // );
+  // const totalSensors = departments.reduce(
+  //   (sum: any, d: any) => sum + d.sensors.length,
+  //   0
+  // );
+  // const offlineSensors = departments.reduce(
+  //   (sum: any, d: any) =>
+  //     sum + d.sensors.filter((s: any) => s.status === "offline").length,
+  //   0
+  // );
 
   const MiniChart = ({ data, color }: { data: number[]; color: string }) => {
     const max = Math.max(...data);
@@ -315,24 +305,24 @@ function App() {
     return "safe";
   };
 
-  const getNoiseAverageDb = (house: any) => {
-    let totalDb = 0;
-    let totalRecords = 0;
+  // const getNoiseAverageDb = (house: any) => {
+  //   let totalDb = 0;
+  //   let totalRecords = 0;
 
-    for (const sensor of house.sensors) {
-      if (!sensor.records || sensor.records.length === 0) continue;
+  //   for (const sensor of house.sensors) {
+  //     if (!sensor.records || sensor.records.length === 0) continue;
 
-      for (const record of sensor.records) {
-        totalDb += parseFloat(record.avg);
-        totalRecords++;
-      }
-    }
+  //     for (const record of sensor.records) {
+  //       totalDb += parseFloat(record.avg);
+  //       totalRecords++;
+  //     }
+  //   }
 
-    if (totalRecords === 0) return 0;
+  //   if (totalRecords === 0) return 0;
 
-    const averageDb = totalDb / totalRecords;
-    return averageDb;
-  };
+  //   const averageDb = totalDb / totalRecords;
+  //   return averageDb;
+  // };
 
   const departmentStatus = (department: any, red: any, yellow: any) => {
     // departments.map((house: any) => ({
