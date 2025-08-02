@@ -126,6 +126,13 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (departments?.length) {
+      const allIds = new Set(departments.map((dept: any) => dept.id));
+      setExpandedDepartments(allIds);
+    }
+  }, [departments]);
+
   const toggleDepartment = (deptId: string) => {
     setExpandedDepartments((prev) => {
       const newSet = new Set(prev);
@@ -703,7 +710,7 @@ function App() {
                         <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-1">
                           <span>Noise Level</span>
                           <span>
-                            {Math.round((dept?.avg / dept.red) * 100)}%
+                            {Math.round((dept?.avg / (dept.red * 1.5)) * 100)}%
                           </span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-1.5 sm:h-2">
@@ -713,7 +720,7 @@ function App() {
                             )}`}
                             style={{
                               width: `${Math.min(
-                                (dept?.avg / dept.red) * 100,
+                                (dept?.avg / (dept.red * 1.5)) * 100,
                                 100
                               )}%`,
                             }}
