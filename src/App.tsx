@@ -784,7 +784,7 @@ function App() {
                                   />
                                 </div>
 
-                                <div className="absolute bottom-1 end-1 text-xs text-gray-500 bg-white/50 rounded-full border border-gray-600 w-4 h-4 flex items-center justify-center">
+                                <div className="absolute bottom-2 right-2 text-xs text-gray-200">
                                   {sensor.id}
                                 </div>
                               </div>
