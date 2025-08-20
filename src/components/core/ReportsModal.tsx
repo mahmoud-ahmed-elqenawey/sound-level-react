@@ -727,6 +727,18 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
         );
 
       case "timeperiods":
+        const hasValidData =
+          timePeriods?.hours?.some((h: any) => h?.avg != null) ||
+          timePeriods?.periods?.some((p: any) => p?.avg != null);
+
+        if (!hasValidData) {
+          return (
+            <div className="bg-gray-100 border border-gray-300 rounded-lg p-6 text-center text-gray-600">
+              No Time Period Data Available
+            </div>
+          );
+        }
+
         return (
           <div className="space-y-6">
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
@@ -745,17 +757,22 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
                 </h4>
                 <div className="grid grid-cols-12 gap-1">
                   {timePeriods?.hours?.map((hour: any, index: number) => {
-                    // const baseNoise = hour >= 6 && hour <= 18 ? 90 : 70; // Higher during day
-                    // const variation =
-                    //   Math.sin(hour * 0.3) * 15 + Math.random() * 10;
-                    // const noise = Math.max(baseNoise + variation, 50);
-                    // const intensity = Math.min((noise - 50) / 50, 1);
+                    if (hour?.avg == null) {
+                      return (
+                        <div
+                          key={index}
+                          className="bg-gray-300 h-8 rounded flex items-center justify-center text-gray-600 text-xs font-bold"
+                        ></div>
+                      );
+                    }
+
                     const bgColor =
-                      hour.level == "high"
+                      hour.level === "high"
                         ? "bg-red-500"
-                        : hour.level == "normal"
+                        : hour.level === "normal"
                         ? "bg-yellow-500"
                         : "bg-green-500";
+
                     return (
                       <div
                         key={index}
@@ -769,6 +786,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
                     );
                   })}
                 </div>
+
                 <div className="flex justify-between text-xs text-gray-500 mt-2">
                   <span>00:00</span>
                   <span>12:00</span>
@@ -796,17 +814,19 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
                       />
 
                       {timePeriods?.hours?.map((hour: any, index: number) => {
+                        if (hour?.avg == null) return null; // نتجاهل الداتا الفاضية
+
                         const radius = 80;
-                        const circumference = 2 * Math.PI * radius; // محيط الدائرة
-                        const segment = circumference / 24; // طول الجزء الخاص بكل ساعة
-                        const offset = circumference - index * segment; // مكان بداية كل ساعة
+                        const circumference = 2 * Math.PI * radius;
+                        const segment = circumference / 24;
+                        const offset = circumference - index * segment;
 
                         const color =
                           hour.level === "high"
-                            ? "#ef4444" // أحمر
+                            ? "#ef4444"
                             : hour.level === "low"
-                            ? "#22c55e" // أخضر
-                            : "#eab308"; // أصفر
+                            ? "#22c55e"
+                            : "#eab308";
 
                         return (
                           <circle
@@ -822,7 +842,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
                             }`}
                             strokeDashoffset={offset}
                             className="transition-all duration-500"
-                            transform="rotate(-90 100 100)" // البداية من فوق
+                            transform="rotate(-90 100 100)"
                           />
                         );
                       })}
@@ -841,36 +861,39 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
+              {/* Periods Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {timePeriods?.periods?.map((period: any, index: number) => (
-                  <div
-                    key={index}
-                    className={`p-4 rounded border ${
-                      period.level === "high"
-                        ? "bg-red-50 border-red-200"
-                        : period.level === "low"
-                        ? "bg-green-50 border-green-200"
-                        : "bg-yellow-50 border-yellow-200"
-                    }`}
-                  >
-                    <p className="text-sm font-medium capitalize">
-                      {period.name}
-                    </p>
-                    <p className="text-xs text-gray-600">{period.range}</p>
-                    <p className="text-xl font-bold">{period.avg} LV</p>
-                    <p
-                      className={`text-xs capitalize ${
+                {timePeriods?.periods
+                  ?.filter((period: any) => period?.avg != null) // ⬅️ فلترة أي عنصر مفيهوش avg
+                  .map((period: any, index: number) => (
+                    <div
+                      key={index}
+                      className={`p-4 rounded border ${
                         period.level === "high"
-                          ? "text-red-600"
+                          ? "bg-red-50 border-red-200"
                           : period.level === "low"
-                          ? "text-green-600"
-                          : "text-yellow-600"
+                          ? "bg-green-50 border-green-200"
+                          : "bg-yellow-50 border-yellow-200"
                       }`}
                     >
-                      {period.range}
-                    </p>
-                  </div>
-                ))}
+                      <p className="text-sm font-medium capitalize">
+                        {period.name}
+                      </p>
+                      <p className="text-xs text-gray-600">{period.range}</p>
+                      <p className="text-xl font-bold">{period.avg} LV</p>
+                      <p
+                        className={`text-xs capitalize ${
+                          period.level === "high"
+                            ? "text-red-600"
+                            : period.level === "low"
+                            ? "text-green-600"
+                            : "text-yellow-600"
+                        }`}
+                      >
+                        {period.range}
+                      </p>
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
