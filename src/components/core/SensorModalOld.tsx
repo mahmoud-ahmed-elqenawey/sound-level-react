@@ -149,54 +149,6 @@ const SensorModal: React.FC<SensorModalProps> = ({
     }
   };
 
-  const analyzePeakAndQuietHours = (records: any[]) => {
-    if (!records || records.length === 0) return null;
-
-    // Group records by hour
-    const hourlyData: { [hour: string]: number[] } = {};
-
-    records.forEach((record) => {
-      if (record.date_time) {
-        const date = new Date(record.date_time);
-        const hour = date.getHours().toString().padStart(2, "0") + ":00";
-        if (!hourlyData[hour]) {
-          hourlyData[hour] = [];
-        }
-        hourlyData[hour].push(parseFloat(record.avg));
-      }
-    });
-
-    // Calculate average for each hour
-    const hourlyAverages = Object.entries(hourlyData).map(([hour, values]) => ({
-      hour,
-      average: values.reduce((sum, val) => sum + val, 0) / values.length,
-      count: values.length,
-    }));
-
-    if (hourlyAverages.length === 0) return null;
-
-    // Find peak and quiet hours
-    const peakHour = hourlyAverages.reduce((max, current) =>
-      current.average > max.average ? current : max
-    );
-
-    const quietHour = hourlyAverages.reduce((min, current) =>
-      current.average < min.average ? current : min
-    );
-
-    return {
-      peakHour: {
-        hour: peakHour.hour,
-        average: Math.round(peakHour.average * 100) / 100,
-        count: peakHour.count,
-      },
-      quietHour: {
-        hour: quietHour.hour,
-        average: Math.round(quietHour.average * 100) / 100,
-        count: quietHour.count,
-      },
-    };
-  };
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", {
@@ -207,6 +159,19 @@ const SensorModal: React.FC<SensorModalProps> = ({
       hour12: false,
     });
   };
+
+  //   const sampleData = (data: any[], maxPoints: number = 100) => {
+  //     if (!data || data.length <= maxPoints) return data;
+
+  //     const step = Math.ceil(data.length / maxPoints);
+  //     const sampled = [];
+
+  //     for (let i = 0; i < data.length; i += step) {
+  //       sampled.push(data[i]);
+  //     }
+
+  //     return sampled;
+  //   };
 
   const DetailedChart = ({
     data,
@@ -283,13 +248,10 @@ const SensorModal: React.FC<SensorModalProps> = ({
   const currentData = sensorData || sensor;
   const chartData =
     currentData?.records?.map((record: any) => parseFloat(record.avg)) || [];
-  const peakQuietAnalysis = analyzePeakAndQuietHours(
-    currentData?.records || []
-  );
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center gap-4">
@@ -429,77 +391,6 @@ const SensorModal: React.FC<SensorModalProps> = ({
                   </div>
                 </div>
               </div>
-
-              {/* Peak and Quiet Hours Analysis */}
-              {peakQuietAnalysis && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-red-800 mb-3 flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4" />
-                      Peak Hour
-                      <span className="text-xs font-normal text-red-600">
-                        ساعة الذروة
-                      </span>
-                    </h4>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-red-700">Time:</span>
-                        <span className="font-bold text-red-900">
-                          {peakQuietAnalysis.peakHour.hour}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-red-700">
-                          Average Noise:
-                        </span>
-                        <span className="font-bold text-red-900">
-                          {peakQuietAnalysis.peakHour.average} LV
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-red-600">Readings:</span>
-                        <span className="text-xs text-red-700">
-                          {peakQuietAnalysis.peakHour.count} samples
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-green-800 mb-3 flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 transform rotate-180" />
-                      Quiet Hour
-                      <span className="text-xs font-normal text-green-600">
-                        ساعة الهدوء
-                      </span>
-                    </h4>
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-green-700">Time:</span>
-                        <span className="font-bold text-green-900">
-                          {peakQuietAnalysis.quietHour.hour}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-green-700">
-                          Average Noise:
-                        </span>
-                        <span className="font-bold text-green-900">
-                          {peakQuietAnalysis.quietHour.average} LV
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-green-600">
-                          Readings:
-                        </span>
-                        <span className="text-xs text-green-700">
-                          {peakQuietAnalysis.quietHour.count} samples
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Detailed Chart */}
               {chartData.length > 0 && (
