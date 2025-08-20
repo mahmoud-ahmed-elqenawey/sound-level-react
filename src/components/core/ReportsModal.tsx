@@ -44,7 +44,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
   );
   const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [departments, setDepartments] = useState<any[]>([]);
+  const [ـ, setDepartments] = useState<any[]>([]);
   const [timePeriods, setTimePeriods] = useState<any>([]);
   const [weeklyData, setWeeklyData] = useState<any>([]);
 
@@ -607,15 +607,21 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
                 <h4 className="text-sm font-semibold text-gray-700 mb-4">
                   Average Noise by Day
                 </h4>
-                <div className="h-48 flex items-end justify-between bg-gray-50 p-4 rounded">
+
+                <div className="h-64 flex items-end justify-between bg-gray-50 p-4 rounded">
                   {weeklyData?.days?.map((day: any, index: number) => {
-                    const height = ((day.avg - 40) / 80) * 100;
+                    // عامل التكبير (كل ما تزوده الفرق يبان أوضح)
+                    const scale = 2;
+                    const height = (day.avg - 60) * scale;
+                    // -60 هنا عشان مايبقاش كله طويل أوي، ممكن تزبطها حسب الداتا
+
                     const color =
                       day.level === "high"
                         ? "bg-red-500"
                         : day.level === "normal"
                         ? "bg-yellow-500"
                         : "bg-green-500";
+
                     return (
                       <div
                         key={index}
@@ -623,17 +629,17 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
                       >
                         <div
                           className={`${color} rounded-t w-12 mb-2 relative group`}
-                          style={{ height: `${height}%`, minHeight: "12px" }}
+                          style={{ height: `${height}px`, minHeight: "12px" }}
                         >
                           <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                            {day.avg} LV
+                            {day.avg.toFixed(2)} LV
                           </div>
                         </div>
                         <span className="text-xs text-gray-600 mb-1">
                           {day.long}
                         </span>
                         <span className="text-xs font-semibold">
-                          {Number(day?.avg)?.toFixed(2)}
+                          {day.avg.toFixed(2)}
                         </span>
                       </div>
                     );
