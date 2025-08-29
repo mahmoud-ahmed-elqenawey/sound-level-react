@@ -2042,16 +2042,16 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                   Hospital Noise Monitoring - {getReportTypeLabel()}
                 </h1>
                 <p className="text-gray-600">
-                  Generated on{" "}
-                  {new Date().toLocaleDateString("en-US", {
+                  Generated on {getTodayDate()}
+                  {/* {new Date().toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
-                  })}
+                  })} */}
                 </p>
-                <p className="text-sm text-gray-500">
+                {/* <p className="text-sm text-gray-500">
                   Report Period: {selectedDate} ({reportPeriod})
-                </p>
+                </p> */}
               </div>
 
               {/* Dynamic Report Content */}
