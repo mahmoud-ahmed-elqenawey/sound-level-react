@@ -984,12 +984,16 @@ function App() {
               >
                 Generate Report
               </button>
-              <button className="w-full p-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-base font-medium transition-colors">
-                Export Sensor Data
-              </button>
-              <button className="w-full p-3 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-base font-medium transition-colors">
-                Configure Alerts
-              </button>
+              {!hideSection && (
+                <>
+                  <button className="w-full p-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-base font-medium transition-colors">
+                    Export Sensor Data
+                  </button>
+                  <button className="w-full p-3 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-base font-medium transition-colors">
+                    Configure Alerts
+                  </button>
+                </>
+              )}
               <button className="w-full p-3 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-lg text-base font-medium transition-colors">
                 Sensor Maintenance
               </button>
