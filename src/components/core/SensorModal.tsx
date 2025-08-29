@@ -281,8 +281,10 @@ const SensorModal: React.FC<SensorModalProps> = ({
   if (!isOpen) return null;
 
   const currentData = sensorData || sensor;
+
   const chartData =
     currentData?.records?.map((record: any) => parseFloat(record.avg)) || [];
+
   const peakQuietAnalysis = analyzePeakAndQuietHours(
     currentData?.records || []
   );

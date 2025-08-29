@@ -40,6 +40,7 @@ function App() {
   const [isSensorModalOpen, setIsSensorModalOpen] = useState(false);
 
   const [isReportsModalOpen, setIsReportsModalOpen] = useState(false);
+  const [hideSection, setHideSection] = useState(true);
 
   // Demo users for authentication
   const demoUsers = {
@@ -89,7 +90,6 @@ function App() {
       axios
         .request(config)
         .then((response) => {
-          console.log("Fetched data:", response.data);
           setDepartments(response.data);
         })
         .catch((error) => {
@@ -110,7 +110,6 @@ function App() {
       axios
         .request(config)
         .then((response) => {
-          console.log("Fetched data:", response.data);
           setStatistics(response.data);
         })
         .catch((error) => {
@@ -244,8 +243,6 @@ function App() {
     const maxRange = 200;
     const range = maxRange - minRange;
 
-    console.log("datasss", data);
-
     return (
       <div className="flex items-end h-6 sm:h-8 gap-0.5 sm:gap-1">
         {cappedData?.map((value, index) => (
@@ -263,8 +260,6 @@ function App() {
   };
 
   const getSensoresStatus = (sensor: any) => {
-    console.log("sensor-------", sensor);
-
     if (!sensor.records || sensor.records.length === 0) return 0;
 
     const total = sensor.records.reduce((sum: any, record: any) => {
@@ -272,69 +267,8 @@ function App() {
     }, 0);
 
     const average = total / sensor.records.length;
-    console.log("getSensoresAvg", average);
     return average;
   };
-
-  // const getNoiseLevel = (house: any, red: any, yellow: any) => {
-  //   for (const sensor of house.sensors) {
-  //     if (!sensor.records || sensor.records.length === 0) continue;
-
-  //     const total = sensor.records.reduce((sum: number, record: any) => {
-  //       return sum + parseFloat(record.avg);
-  //     }, 0);
-
-  //     const average = total / sensor.records.length;
-
-  //     console.log(`Sensor ${sensor.name} avg: ${average}`);
-
-  //     // getSensoresStatus(sensor) >= sensor?.yellow &&
-  //     // getSensoresStatus(sensor) < sensor?.red
-  //     //   ? "warning"
-  //     //   : getSensoresStatus(sensor) >= sensor?.red
-  //     //   ? "critical"
-  //     //   : "safe";
-
-  //     console.log("average average", average);
-
-  //     if (average >= yellow && average <= red) return "warning";
-  //     if (average >= red) return "critical";
-  //   }
-
-  //   return "safe";
-  // };
-
-  // const getNoiseAverageDb = (house: any) => {
-  //   let totalDb = 0;
-  //   let totalRecords = 0;
-
-  //   for (const sensor of house.sensors) {
-  //     if (!sensor.records || sensor.records.length === 0) continue;
-
-  //     for (const record of sensor.records) {
-  //       totalDb += parseFloat(record.avg);
-  //       totalRecords++;
-  //     }
-  //   }
-
-  //   if (totalRecords === 0) return 0;
-
-  //   const averageDb = totalDb / totalRecords;
-  //   return averageDb;
-  // };
-
-  // const departmentStatus = (department: any, red: any, yellow: any) => {
-  //   // departments.map((house: any) => ({
-  //   //   name: house.name,
-  //   //   noiseLevel: getNoiseLevel(house),
-  //   // }));
-
-  //   // console.log("departmentStatus", getNoiseLevel(department, red, yellow));
-  //   return {
-  //     name: department.name,
-  //     noiseLevel: getNoiseLevel(department, red, yellow),
-  //   };
-  // };
 
   const getSensorAvgValues = (house: any, sensorId: any) => {
     const sensor = house.sensors.find((s: any) => s.id === sensorId);
@@ -356,6 +290,19 @@ function App() {
       return Math.round(avg * 100) / 100; // تقريبه إلى رقم عشريين
     });
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hideParam = params.get("hide");
+
+    if (hideParam === "true") {
+      setHideSection(true);
+    } else if (hideParam === null) {
+      setHideSection(true);
+    } else {
+      setHideSection(false);
+    }
+  }, []);
 
   return (
     <>
@@ -1058,7 +1005,12 @@ function App() {
         onClose={closeSensorModal}
       />
 
-      <ReportsModal isOpen={isReportsModalOpen} onClose={closeReportsModal} />
+      <ReportsModal
+        isOpen={isReportsModalOpen}
+        onClose={closeReportsModal}
+        hideSection={hideSection}
+        departments={departments}
+      />
     </>
   );
 }

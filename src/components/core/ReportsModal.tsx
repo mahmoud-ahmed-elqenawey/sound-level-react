@@ -6,22 +6,22 @@ import {
   TrendingUp,
   AlertTriangle,
   Clock,
-  Printer,
-  Download,
   BarChart3,
   Activity,
   Wifi,
   Building2,
   Users,
   Settings,
-  FileSpreadsheet,
-  Presentation,
 } from "lucide-react";
 import axios from "axios";
-
+import GeneralModal from "./GeneralModal";
+import getTodayDate from "../../utils/getTodayDate";
+// import getTodayDate from '../../'
 interface ReportsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  hideSection: boolean;
+  departments: any;
 }
 
 type ReportPeriod = "daily" | "weekly" | "monthly";
@@ -34,21 +34,24 @@ type ReportType =
   | "kpis"
   | "technical"
   | "executive"
+  | "general"
   | "custom";
 
-const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
+const ReportsModal: React.FC<ReportsModalProps> = ({
+  isOpen,
+  onClose,
+  hideSection,
+  departments,
+}) => {
   const [reportPeriod, setReportPeriod] = useState<ReportPeriod>("daily");
   const [reportType, setReportType] = useState<ReportType>("overview");
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
+  const [selectedDate, setSelectedDate] = useState(getTodayDate());
   const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [ـ, setDepartments] = useState<any[]>([]);
   const [timePeriods, setTimePeriods] = useState<any>([]);
   const [weeklyData, setWeeklyData] = useState<any>([]);
-
-  console.log("weeklyData", weeklyData);
+  // const [generalModal, setGeneralModal] = useState<any>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -410,18 +413,18 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
     );
   };
 
-  const getPeriodLabel = () => {
-    switch (reportPeriod) {
-      case "daily":
-        return "Daily Report";
-      case "weekly":
-        return "Weekly Report";
-      case "monthly":
-        return "Monthly Report";
-      default:
-        return "Report";
-    }
-  };
+  // const getPeriodLabel = () => {
+  //   switch (reportPeriod) {
+  //     case "daily":
+  //       return "Daily Report";
+  //     case "weekly":
+  //       return "Weekly Report";
+  //     case "monthly":
+  //       return "Monthly Report";
+  //     default:
+  //       return "Report";
+  //   }
+  // };
 
   const getReportTypeLabel = () => {
     const labels = {
@@ -434,6 +437,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
       technical: "Technical Status",
       executive: "Executive Summary",
       custom: "Custom Report",
+      general: "General Report",
     };
     return labels[reportType];
   };
@@ -1625,6 +1629,13 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
           </div>
         );
 
+      case "general":
+        return (
+          <div className="space-y-6">
+            <GeneralModal departments={departments} />
+          </div>
+        );
+
       default:
         return (
           <div className="space-y-6">
@@ -1908,7 +1919,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
           <div className="flex items-center gap-2 print:hidden">
-            <button
+            {/* <button
               onClick={handlePrint}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               title="Print Report"
@@ -1935,7 +1946,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
               title="Export PowerPoint"
             >
               <Presentation className="h-5 w-5 text-gray-600" />
-            </button>
+            </button> */}
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -1956,26 +1967,28 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
               {/* Report Controls */}
               <div className="flex flex-wrap gap-4 items-center justify-between print:hidden">
                 <div className="flex flex-wrap gap-4">
-                  <div className="flex gap-2">
-                    <span className="text-sm font-medium text-gray-700 self-center mr-3">
-                      Period:
-                    </span>
-                    {(["daily", "weekly", "monthly"] as ReportPeriod[]).map(
-                      (period) => (
-                        <button
-                          key={period}
-                          onClick={() => setReportPeriod(period)}
-                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${
-                            reportPeriod === period
-                              ? "bg-blue-100 text-blue-700 border border-blue-200"
-                              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                          }`}
-                        >
-                          {period}
-                        </button>
-                      )
-                    )}
-                  </div>
+                  {/* {
+                    <div className="flex gap-2">
+                      <span className="text-sm font-medium text-gray-700 self-center mr-3">
+                        Period:
+                      </span>
+                      {(["daily", "weekly", "monthly"] as ReportPeriod[]).map(
+                        (period) => (
+                          <button
+                            key={period}
+                            onClick={() => setReportPeriod(period)}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${
+                              reportPeriod === period
+                                ? "bg-blue-100 text-blue-700 border border-blue-200"
+                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                            }`}
+                          >
+                            {period}
+                          </button>
+                        )
+                      )}
+                    </div>§
+                  } */}
                   <div className="flex gap-2">
                     <span className="text-sm font-medium text-gray-700 self-center mr-3">
                       Type:
@@ -1987,27 +2000,40 @@ const ReportsModal: React.FC<ReportsModalProps> = ({ isOpen, onClose }) => {
                       }
                       className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
                     >
-                      <option value="overview">Overview</option>
-                      <option value="trends">Trend Analysis</option>
-                      <option value="weekdays">Weekday Analysis</option>
-                      <option value="timeperiods">Time Periods</option>
-                      <option value="medical">Medical Impact</option>
-                      <option value="kpis">Performance KPIs</option>
-                      <option value="technical">Technical Status</option>
-                      <option value="executive">Executive Summary</option>
+                      {hideSection ? (
+                        <>
+                          <option value="overview">Overview</option>
+                          <option value="general">General</option>
+                          <option value="weekdays">Weekday Analysis</option>
+                          <option value="timeperiods">Time Periods</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value="overview">Overview</option>
+                          <option value="trends">Trend Analysis</option>
+                          <option value="weekdays">Weekday Analysis</option>
+                          <option value="timeperiods">Time Periods</option>
+                          <option value="medical">Medical Impact</option>
+                          <option value="kpis">Performance KPIs</option>
+                          <option value="technical">Technical Status</option>
+                          <option value="executive">Executive Summary</option>
+                        </>
+                      )}
                       {/* <option value="standards">Standards</option> */}
                     </select>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-gray-500" />
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
+                {reportType == "timeperiods" && (
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-gray-500" />
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Report Header */}
