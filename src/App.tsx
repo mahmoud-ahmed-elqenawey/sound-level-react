@@ -340,6 +340,15 @@ function App() {
                       })}
                     </div>
                   </div>
+                  <div className="h-8 sm:h-12 w-px bg-gray-200" />{" "}
+                  <div className="text-right">
+                    <div className="text-xs sm:text-sm text-gray-500">
+                      Noise
+                    </div>
+                    <div className="font-mono text-sm sm:text-lg font-semibold text-gray-800">
+                      1DB = 1.55LV
+                    </div>
+                  </div>
                   <div className="h-8 sm:h-12 w-px bg-gray-200" />
                 </div>
                 <div className="flex flex-col gap-3 items-center justify-between border-gray-100">

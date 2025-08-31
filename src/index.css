@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media print {
+  /* شيل أي ألوان خلفية */
+  body {
+    background: white !important;
+  }
+
+  /* خلي الصفحة A4 */
+  @page {
+    size: A4 portrait;
+    margin: 1cm;
+  }
+
+  /* البوكسات */
+  .print-card {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    page-break-inside: avoid; /* مهم عشان الكارد ميتقطعش بين صفحات */
+  }
+
+  /* الجدول */
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd !important;
+    padding: 4px !important;
+    font-size: 12px;
+  }
+
+  /* شيل الهوفر أو الترانزيشن */
+  * {
+    transition: none !important;
+  }
+
+  /* أخفي الحاجات اللي ملهاش لازمة في الطباعة */
+  .no-print {
+    display: none !important;
+  }
+
+  /* لو عندك grid تتحول لبلوك عشان متلخبطش */
+  .grid {
+    display: block !important;
+  }
+}

@@ -12,6 +12,7 @@ import {
   Building2,
   Users,
   Settings,
+  Printer,
 } from "lucide-react";
 import axios from "axios";
 import GeneralModal from "./GeneralModal";
@@ -924,17 +925,17 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                   <div className="relative w-48 h-24">
                     <svg className="w-full h-full" viewBox="0 0 200 100">
                       {/* Background arc */}
-                      <path
+                      {/* <path
                         d="M 20 80 A 80 80 0 0 1 180 80"
                         fill="none"
                         stroke="#e5e7eb"
                         strokeWidth="12"
-                      />
+                      /> */}
                       {/* Progress arc - 75% good */}
                       <path
                         d="M 20 80 A 80 80 0 0 1 140 30"
                         fill="none"
-                        stroke="#22c55e"
+                        stroke="#eab308"
                         strokeWidth="12"
                         strokeLinecap="round"
                       />
@@ -942,7 +943,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                         x="100"
                         y="70"
                         textAnchor="middle"
-                        className="text-2xl font-bold fill-green-600"
+                        className={`text-2xl font-bold `}
                       >
                         B+
                       </text>
@@ -969,9 +970,9 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                     .slice(0, 5)
                     .map((dept: any, index: number) => {
                       const riskLevel =
-                        dept.avgNoise > 80
+                        dept.avgNoise > 100
                           ? "high"
-                          : dept.avgNoise > 65
+                          : dept.avgNoise > 75
                           ? "medium"
                           : "low";
                       const riskColor =
@@ -982,10 +983,10 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                           : "bg-green-500";
                       const riskWidth =
                         riskLevel === "high"
-                          ? "85%"
+                          ? "100%"
                           : riskLevel === "medium"
-                          ? "60%"
-                          : "30%";
+                          ? "75%"
+                          : "50%";
                       return (
                         <div key={index} className="flex items-center gap-4">
                           <div className="w-24 text-sm font-medium text-gray-700 truncate">
@@ -1023,7 +1024,8 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                     Patient Sleep Impact
                   </p>
                   <p className="text-gray-600">
-                    {reportData.medicalImpact.patientSleep}
+                    {/* {reportData.medicalImpact.patientSleep} */}
+                    Noise levels may affect patient sleep in 1 departments
                   </p>
                 </div>
                 <div className="bg-white p-4 rounded border">
@@ -1033,24 +1035,6 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                   <p className="text-2xl font-bold text-green-600">
                     {reportData.medicalImpact.healingEnvironment}
                   </p>
-                </div>
-                <div className="bg-white p-4 rounded border">
-                  <p className="font-medium text-gray-800 mb-2">
-                    Recommendations
-                  </p>
-                  <ul className="space-y-1">
-                    {reportData.medicalImpact.recommendations.map(
-                      (rec: string, index: number) => (
-                        <li
-                          key={index}
-                          className="text-sm text-gray-600 flex items-start gap-2"
-                        >
-                          <span className="text-green-600">•</span>
-                          {rec}
-                        </li>
-                      )
-                    )}
-                  </ul>
                 </div>
               </div>
             </div>
@@ -1919,14 +1903,14 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
             </div>
           </div>
           <div className="flex items-center gap-2 print:hidden">
-            {/* <button
+            <button
               onClick={handlePrint}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               title="Print Report"
             >
               <Printer className="h-5 w-5 text-gray-600" />
             </button>
-            <button
+            {/* <button
               onClick={() => handleExport("csv")}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               title="Export CSV"
@@ -1963,7 +1947,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-6 ">
               {/* Report Controls */}
               <div className="flex flex-wrap gap-4 items-center justify-between print:hidden">
                 <div className="flex flex-wrap gap-4">
@@ -2006,6 +1990,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                           <option value="general">General</option>
                           <option value="weekdays">Weekday Analysis</option>
                           <option value="timeperiods">Time Periods</option>
+                          <option value="medical">Medical Impact</option>
                         </>
                       ) : (
                         <>
