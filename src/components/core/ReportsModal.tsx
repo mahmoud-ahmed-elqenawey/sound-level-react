@@ -922,40 +922,89 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                   Patient Care Impact Score
                 </h4>
                 <div className="flex justify-center">
-                  <div className="relative w-48 h-24">
-                    <svg className="w-full h-full" viewBox="0 0 200 100">
-                      {/* Background arc */}
-                      {/* <path
-                        d="M 20 80 A 80 80 0 0 1 180 80"
-                        fill="none"
-                        stroke="#e5e7eb"
-                        strokeWidth="12"
-                      /> */}
-                      {/* Progress arc - 75% good */}
-                      <path
-                        d="M 20 80 A 80 80 0 0 1 140 30"
-                        fill="none"
-                        stroke="#eab308"
-                        strokeWidth="12"
-                        strokeLinecap="round"
-                      />
-                      <text
-                        x="100"
-                        y="70"
-                        textAnchor="middle"
-                        className={`text-2xl font-bold `}
-                      >
-                        B+
-                      </text>
-                      <text
-                        x="100"
-                        y="85"
-                        textAnchor="middle"
-                        className="text-xs fill-gray-600"
-                      >
-                        Environment Quality
-                      </text>
-                    </svg>
+                  <div className="relative  ">
+                    {reportData.departmentStats
+                      .slice(0, 5)
+                      .map((dept: any, index: number) => {
+                        const riskLevel =
+                          dept.avgNoise > 100
+                            ? "high"
+                            : dept.avgNoise > 75
+                            ? "medium"
+                            : "low";
+
+                        const riskColor =
+                          riskLevel === "high"
+                            ? "#ef4444" // أحمر
+                            : riskLevel === "medium"
+                            ? "#eab308" // أصفر
+                            : "#22c55e"; // أخضر
+
+                        const percentage = Math.min(
+                          (dept.avgNoise / 120) * 100,
+                          100
+                        );
+                        const radius = 40;
+                        const circumference = 2 * Math.PI * radius;
+                        const offset =
+                          circumference - (percentage / 100) * circumference;
+
+                        return (
+                          <div
+                            key={index}
+                            className="flex flex-col items-center p-4"
+                          >
+                            <svg width="100" height="100" viewBox="0 0 100 100">
+                              {/* الخلفية الرمادية */}
+                              <circle
+                                cx="50"
+                                cy="50"
+                                r={radius}
+                                fill="none"
+                                stroke="#e5e7eb"
+                                strokeWidth="10"
+                              />
+                              {/* الـ progress arc */}
+                              <circle
+                                cx="50"
+                                cy="50"
+                                r={radius}
+                                fill="none"
+                                stroke={riskColor}
+                                strokeWidth="10"
+                                strokeDasharray={circumference}
+                                strokeDashoffset={offset}
+                                strokeLinecap="round"
+                                transform="rotate(-90 50 50)" // يبدأ من فوق
+                              />
+                              {/* النص */}
+                              <text
+                                x="50"
+                                y="50"
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                className="text-sm font-bold fill-gray-800"
+                              >
+                                {dept.avgNoise} LV
+                              </text>
+                            </svg>
+                            <span className="mt-2 text-xs font-medium text-gray-700">
+                              {dept.name}
+                            </span>
+                            <span
+                              className={`text-xs font-semibold ${
+                                riskLevel === "high"
+                                  ? "text-red-600"
+                                  : riskLevel === "medium"
+                                  ? "text-yellow-600"
+                                  : "text-green-600"
+                              }`}
+                            >
+                              {riskLevel.toUpperCase()}
+                            </span>
+                          </div>
+                        );
+                      })}
                   </div>
                 </div>
               </div>
