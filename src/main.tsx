@@ -7,6 +7,7 @@ import "./index.css";
 // import ProtectedRoute from "./pages/ProtectedRoute.tsx";
 import App from "./App.tsx";
 import { Toaster } from "react-hot-toast";
+import "react-datepicker/dist/react-datepicker.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

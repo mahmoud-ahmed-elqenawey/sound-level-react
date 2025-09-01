@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Wifi, WifiOff } from "lucide-react";
 import axios from "axios";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
 
 type TimeFrame = "3600" | "21600" | "86400" | "604800";
 
@@ -15,19 +16,24 @@ const GeneralModal = ({ departments }: any) => {
   const [sensorId, setSensorId] = useState<any>(null);
   const [department, setDepartment] = useState<any>(1);
   const [loading, setLoading] = useState(false);
+  const now = new Date();
+  const yesterday = new Date(now);
+  yesterday.setHours(now.getHours() - 24);
 
-  // const departmentsdata = [
-  //   ...new Set(departments?.flatMap((item: any) => item)),
-  // ];
+  const [startDate, setStartDate] = useState<string>(
+    yesterday.toISOString().split(".")[0] + "Z"
+  );
+  const [endDate, setEndDate] = useState<string>(
+    now.toISOString().split(".")[0] + "Z"
+  );
 
-  // نجيب الـ sensors (unique)
   const sensors = [
     ...new Set(departments?.flatMap((item: any) => item?.sensors)),
   ];
 
   useEffect(() => {
     fetchSensorData();
-  }, [sensorId, timeFrame, department]);
+  }, [sensorId, timeFrame, department, startDate, endDate]);
 
   const fetchSensorData = async () => {
     setLoading(true);
@@ -37,14 +43,15 @@ const GeneralModal = ({ departments }: any) => {
     const sensors = sensorId && sensorId.length > 0 ? sensorId : defaultSensors;
 
     const params = new URLSearchParams();
-
-    if (timeFrame && timeFrame !== "") {
-      params.append("interval", timeFrame);
-    }
+    params.append("start", startDate);
+    params.append("end", endDate);
 
     if (department && department !== "") {
       params.append("department_ids", department);
     }
+
+    // http://127.0.0.1:8000/soundlevel/dashboard/sensor_timeseries/?sensor_ids=1,2&start=2025-08-31T12:00:00Z&end=2025-09-01T00:00:00Z
+
     const url = `https://sound-level-dashboard.vision-jo.com/soundlevel/dashboard/sensor_timeseries/?sensor_ids=${sensors}${
       params.toString() ? `&${params.toString()}` : ""
     }`;
@@ -77,15 +84,15 @@ const GeneralModal = ({ departments }: any) => {
       label: dept.name || dept.name,
     })) || [];
 
-  const timeFrameOptions = [
-    { value: "1m", label: "1 Minute" },
-    { value: "1h", label: "1 Hour" },
-    { value: "1d", label: "1 Day" },
-    { value: "1w", label: "1 Week" },
-    { value: "1mo", label: "1 Month" },
-    { value: "1q", label: "1 Quarter" },
-    { value: "1y", label: "1 Year" },
-  ];
+  // const timeFrameOptions = [
+  //   { value: "1m", label: "1 Minute" },
+  //   { value: "1h", label: "1 Hour" },
+  //   { value: "1d", label: "1 Day" },
+  //   { value: "1w", label: "1 Week" },
+  //   { value: "1mo", label: "1 Month" },
+  //   { value: "1q", label: "1 Quarter" },
+  //   { value: "1y", label: "1 Year" },
+  // ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -305,29 +312,36 @@ const GeneralModal = ({ departments }: any) => {
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-            {/* Time Frame */}
-            <div className="w-full">
-              <label
-                htmlFor="time_frame"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Time Frame
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full">
+            <div className="w-full flex flex-col">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Start Date
               </label>
-              <Select
-                id="time_frame"
-                options={timeFrameOptions}
-                value={
-                  timeFrame
-                    ? timeFrameOptions.find((t) => t.value === timeFrame)
-                    : null
+              <DatePicker
+                selected={startDate ? new Date(startDate) : null}
+                onChange={(date: Date | null) =>
+                  setStartDate(date ? date.toISOString() : "")
                 }
-                onChange={(selected: any) =>
-                  setTimeFrame(selected ? selected.value : "")
+                // showTimeSelect
+                dateFormat="yyyy-MM-dd"
+                className="chakra-input w-full border rounded-md px-3 py-2"
+                maxDate={endDate ? new Date(endDate) : undefined}
+              />
+            </div>
+
+            {/* End Date */}
+            <div className="w-full flex flex-col">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                End Date
+              </label>
+              <DatePicker
+                selected={endDate ? new Date(endDate) : null}
+                onChange={(date: Date | null) =>
+                  setEndDate(date ? date.toISOString() : "")
                 }
-                isClearable
-                className="react-select-container"
-                classNamePrefix="react-select"
+                // showTimeSelect
+                dateFormat="yyyy-MM-dd"
+                className="chakra-input w-full border rounded-md px-3 py-2"
               />
             </div>
 
