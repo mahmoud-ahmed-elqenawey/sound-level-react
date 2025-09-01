@@ -1935,7 +1935,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-hidden">
+      <div className="modal-print bg-white rounded-xl shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 print:border-b-2 print:border-black">
           <div className="flex items-center gap-4">
@@ -1990,7 +1990,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <div className="print-content p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
           {loading ? (
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>

@@ -13,6 +13,7 @@ import LoginForm from "./pages/Login";
 import axios from "axios";
 import SensorModal from "./components/core/SensorModal";
 import ReportsModal from "./components/core/ReportsModal";
+import toast from "react-hot-toast";
 
 interface User {
   username: string;

@@ -3,49 +3,49 @@
 @tailwind utilities;
 
 @media print {
-  /* شيل أي ألوان خلفية */
-  body {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  /* أخفي أي حاجة في الصفحة غير المودال */
+  body * {
+    visibility: hidden !important;
+  }
+
+  .modal-print,
+  .modal-print * {
+    visibility: visible !important;
+  }
+
+  /* خلي المودال بس اللي يظهر */
+  .modal-print {
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
     background: white !important;
   }
 
-  /* خلي الصفحة A4 */
-  @page {
-    size: A4 portrait;
-    margin: 1cm;
+  .modal-print .print-content {
+    max-height: none !important;
+    overflow: visible !important;
   }
 
-  /* البوكسات */
-  .print-card {
-    border: 1px solid #ddd !important;
-    box-shadow: none !important;
-    page-break-inside: avoid; /* مهم عشان الكارد ميتقطعش بين صفحات */
-  }
-
-  /* الجدول */
-  table {
-    border-collapse: collapse !important;
-    width: 100% !important;
-  }
-
-  th,
-  td {
-    border: 1px solid #ddd !important;
-    padding: 4px !important;
-    font-size: 12px;
-  }
-
-  /* شيل الهوفر أو الترانزيشن */
-  * {
-    transition: none !important;
-  }
-
-  /* أخفي الحاجات اللي ملهاش لازمة في الطباعة */
-  .no-print {
+  /* أخفي الـ overlay */
+  .print-overlay {
     display: none !important;
   }
 
-  /* لو عندك grid تتحول لبلوك عشان متلخبطش */
-  .grid {
-    display: block !important;
+  * {
+    -webkit-print-color-adjust: exact !important; /* Chrome/Safari */
+    print-color-adjust: exact !important; /* Firefox */
+    color-adjust: exact !important; /* Old spec */
   }
 }

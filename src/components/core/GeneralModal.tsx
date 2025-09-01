@@ -3,6 +3,7 @@ import { Wifi, WifiOff } from "lucide-react";
 import axios from "axios";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
+import toast from "react-hot-toast";
 
 type TimeFrame = "3600" | "21600" | "86400" | "604800";
 
@@ -71,11 +72,9 @@ const GeneralModal = ({ departments }: any) => {
       if (response.data) {
         setSensorData(response.data.results);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching sensor data:", error);
-      alert("Error fetching sensor data");
-      // Use existing sensor data as fallback
-      // setSensorData(sensor);
+      toast.error(error?.response?.data?.detail);
     } finally {
       setLoading(false);
     }
