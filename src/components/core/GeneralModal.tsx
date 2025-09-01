@@ -6,26 +6,24 @@ import DatePicker from "react-datepicker";
 
 type TimeFrame = "3600" | "21600" | "86400" | "604800";
 
-// time
-// sensor
-// department
-
 const GeneralModal = ({ departments }: any) => {
   const [sensorData, setSensorData] = useState<any>(null);
   const [timeFrame, setTimeFrame] = useState("1h");
   const [sensorId, setSensorId] = useState<any>(null);
   const [department, setDepartment] = useState<any>(1);
   const [loading, setLoading] = useState(false);
+
+  const toLocalISOString = (date: Date) => {
+    const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return local.toISOString().split(".")[0] + "Z"; // ISO بدون milliseconds
+  };
+
   const now = new Date();
   const yesterday = new Date(now);
   yesterday.setHours(now.getHours() - 24);
 
-  const [startDate, setStartDate] = useState<string>(
-    yesterday.toISOString().split(".")[0] + "Z"
-  );
-  const [endDate, setEndDate] = useState<string>(
-    now.toISOString().split(".")[0] + "Z"
-  );
+  const [startDate, setStartDate] = useState<Date>(yesterday);
+  const [endDate, setEndDate] = useState<Date>(now);
 
   const sensors = [
     ...new Set(departments?.flatMap((item: any) => item?.sensors)),
@@ -43,8 +41,13 @@ const GeneralModal = ({ departments }: any) => {
     const sensors = sensorId && sensorId.length > 0 ? sensorId : defaultSensors;
 
     const params = new URLSearchParams();
-    params.append("start", startDate);
-    params.append("end", endDate);
+
+    if (startDate) {
+      params.append("start", toLocalISOString(startDate));
+    }
+    if (endDate) {
+      params.append("end", toLocalISOString(endDate));
+    }
 
     if (department && department !== "") {
       params.append("department_ids", department);
@@ -318,12 +321,10 @@ const GeneralModal = ({ departments }: any) => {
                 Start Date
               </label>
               <DatePicker
-                selected={startDate ? new Date(startDate) : null}
-                onChange={(date: Date | null) =>
-                  setStartDate(date ? date.toISOString() : "")
-                }
-                // showTimeSelect
-                dateFormat="yyyy-MM-dd"
+                selected={startDate}
+                onChange={(date: Date | null) => date && setStartDate(date)}
+                showTimeSelect
+                dateFormat="yyyy-MM-dd HH:mm"
                 className="chakra-input w-full border rounded-md px-3 py-2"
                 maxDate={endDate ? new Date(endDate) : undefined}
               />
@@ -335,12 +336,10 @@ const GeneralModal = ({ departments }: any) => {
                 End Date
               </label>
               <DatePicker
-                selected={endDate ? new Date(endDate) : null}
-                onChange={(date: Date | null) =>
-                  setEndDate(date ? date.toISOString() : "")
-                }
-                // showTimeSelect
-                dateFormat="yyyy-MM-dd"
+                selected={endDate}
+                onChange={(date: Date | null) => date && setEndDate(date)}
+                showTimeSelect
+                dateFormat="yyyy-MM-dd HH:mm"
                 className="chakra-input w-full border rounded-md px-3 py-2"
               />
             </div>
