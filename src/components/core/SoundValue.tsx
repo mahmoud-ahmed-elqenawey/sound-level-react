@@ -5,7 +5,7 @@ const SoundValue = ({ lv }: any) => {
 
   const toDb = (lv: number) => Number(lv) / 1.55;
 
-  const displayValue = unit === "LV" ? lv : toDb(lv);
+  const displayValue = unit === "LV" ? Number(lv) : toDb(lv);
 
   return (
     <span>
