@@ -8,6 +8,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import axios from "axios";
+import SoundValue from "./SoundValue";
 
 interface SensorModalProps {
   sensor: any;
@@ -251,7 +252,9 @@ const SensorModal: React.FC<SensorModalProps> = ({
               }}
             >
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                <div>{value.toFixed(1)} LV</div>
+                <div>
+                  <SoundValue lv={value} />
+                </div>
                 {allRecords[index]?.date_time && (
                   <div className="text-xs opacity-75">
                     {formatDateTime(allRecords[index].date_time)}
@@ -357,10 +360,11 @@ const SensorModal: React.FC<SensorModalProps> = ({
                         Current Level
                       </p>
                       <p className="text-2xl font-bold text-gray-900 mt-1">
-                        {currentData.is_active
-                          ? Math.round(parseFloat(currentData.avg))
-                          : "--"}{" "}
-                        LV
+                        {currentData.is_active ? (
+                          <SoundValue lv={currentData.avg} />
+                        ) : (
+                          "--"
+                        )}{" "}
                       </p>
                     </div>
                     <div
@@ -455,7 +459,8 @@ const SensorModal: React.FC<SensorModalProps> = ({
                           Average Noise:
                         </span>
                         <span className="font-bold text-red-900">
-                          {peakQuietAnalysis.peakHour.average} LV
+                          {/* {peakQuietAnalysis.peakHour.average} LV */}
+                          <SoundValue lv={peakQuietAnalysis.peakHour.average} />
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -487,7 +492,9 @@ const SensorModal: React.FC<SensorModalProps> = ({
                           Average Noise:
                         </span>
                         <span className="font-bold text-green-900">
-                          {peakQuietAnalysis.quietHour.average} LV
+                          <SoundValue
+                            lv={peakQuietAnalysis.quietHour.average}
+                          />
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
@@ -524,7 +531,8 @@ const SensorModal: React.FC<SensorModalProps> = ({
                       Warning Level
                     </span>
                     <span className="text-lg font-bold text-yellow-900">
-                      {currentData.yellow} LV
+                      {/* {currentData.yellow} LV */}
+                      <SoundValue lv={currentData.yellow} />
                     </span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -532,7 +540,7 @@ const SensorModal: React.FC<SensorModalProps> = ({
                       Critical Level
                     </span>
                     <span className="text-lg font-bold text-red-900">
-                      {currentData.red} LV
+                      <SoundValue lv={currentData.red} />
                     </span>
                   </div>
                 </div>
@@ -576,7 +584,8 @@ const SensorModal: React.FC<SensorModalProps> = ({
                                   : `#${record.id}`}
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {parseFloat(record.avg).toFixed(1)} LV
+                                {/* {parseFloat(record.avg).toFixed(1)} LV */}
+                                <SoundValue lv={record.avg} />
                               </td>
                               <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                                 <div className="flex items-center gap-2">

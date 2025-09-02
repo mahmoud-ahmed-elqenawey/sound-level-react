@@ -638,14 +638,16 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                           style={{ height: `${height}px`, minHeight: "12px" }}
                         >
                           <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                            {day.avg.toFixed(2)} LV
+                            {/* {day.avg.toFixed(2)} LV */}
+                            <SoundValue lv={day.avg} />
                           </div>
                         </div>
                         <span className="text-xs text-gray-600 mb-1">
                           {day.long}
                         </span>
                         <span className="text-xs font-semibold">
-                          {day.avg.toFixed(2)}
+                          {/* {day.avg.toFixed(2)} */}
+                          <SoundValue lv={day.avg} />
                         </span>
                       </div>
                     );
@@ -678,9 +680,9 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                     <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-2">
                       <div className="text-center">
                         <div className="text-2xl font-bold text-blue-600">
-                          {weeklyData.summary.weekdays_avg}
+                          {/* {weeklyData.summary.weekdays_avg} */}
+                          <SoundValue lv={weeklyData.summary.weekdays_avg} />
                         </div>
-                        <div className="text-xs text-blue-500">LV</div>
                       </div>
                     </div>
                     <p className="text-sm font-medium text-gray-700">
@@ -697,9 +699,10 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                     <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-2">
                       <div className="text-center">
                         <div className="text-2xl font-bold text-green-600">
-                          {weeklyData.summary.weekends_avg}
+                          {/* {weeklyData.summary.weekends_avg} */}
+                          <SoundValue lv={weeklyData.summary.weekends_avg} />
                         </div>
-                        <div className="text-xs text-green-500">LV</div>
+                        {/* <div className="text-xs text-green-500">LV</div> */}
                       </div>
                     </div>
                     <p className="text-sm font-medium text-gray-700">
@@ -723,7 +726,8 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                   >
                     <p className="text-xs font-medium">{day.long}</p>
                     <p className="text-lg font-bold">
-                      {Number(day.avg).toFixed(1)} LV
+                      {/* {Number(day.avg).toFixed(1)} LV */}
+                      <SoundValue lv={day.avg} />
                     </p>
                   </div>
                 ))}
@@ -786,7 +790,8 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                       >
                         {hour?.hour}
                         <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                          {hour?.hour} - {hour?.avg?.toFixed(0)} LV
+                          {hour?.hour} - <SoundValue lv={hour?.avg} />
+                          {/* {hour?.avg?.toFixed(0)} LV */}
                         </div>
                       </div>
                     );
@@ -886,7 +891,9 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                         {period.name}
                       </p>
                       <p className="text-xs text-gray-600">{period.range}</p>
-                      <p className="text-xl font-bold">{period.avg} LV</p>
+                      <p className="text-xl font-bold">
+                        <SoundValue lv={period.avg} />
+                      </p>
                       <p
                         className={`text-xs capitalize ${
                           period.level === "high"
@@ -986,7 +993,8 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                                 dominantBaseline="middle"
                                 className="text-sm font-bold fill-gray-800"
                               >
-                                {dept.avgNoise} LV
+                                {/* {dept.avgNoise} LV */}
+                                <SoundValue lv={dept.avgNoise} />
                               </text>
                             </svg>
                             <span className="mt-2 text-xs font-medium text-gray-700">
@@ -1048,7 +1056,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                               style={{ width: riskWidth }}
                             />
                             <span className="absolute right-2 top-0 h-4 flex items-center text-xs text-gray-600">
-                              {dept.avgNoise} LV
+                              <SoundValue lv={dept.avgNoise} />
                             </span>
                           </div>
                           <div
@@ -1701,7 +1709,8 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                             style={{ height: `${height}%`, minHeight: "12px" }}
                           >
                             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                              {dept.name}: {dept.avgNoise} LV
+                              {dept.name}:
+                              <SoundValue lv={dept.avgNoise} />
                             </div>
                           </div>
                           <span className="text-xs text-gray-600 text-center leading-tight">
@@ -1825,7 +1834,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                       Average Noise
                     </p>
                     <p className="text-2xl font-bold text-yellow-900">
-                      {reportData.averageNoise} LV
+                      <SoundValue lv={reportData.averageNoise} />
                     </p>
                   </div>
                   <Clock className="h-8 w-8 text-yellow-600" />
@@ -1865,7 +1874,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                         Department
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Avg Noise (LV)
+                        Avg Noise
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Status
