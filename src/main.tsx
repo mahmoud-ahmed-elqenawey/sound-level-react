@@ -8,23 +8,13 @@ import "./index.css";
 import App from "./App.tsx";
 import { Toaster } from "react-hot-toast";
 import "react-datepicker/dist/react-datepicker.css";
+import { UnitProvider } from "./components/core/UnitProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    {/* <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <App />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </BrowserRouter> */}
-    <App />
+    <UnitProvider>
+      <App />
+    </UnitProvider>
     <Toaster position="top-center" />
   </StrictMode>
 );

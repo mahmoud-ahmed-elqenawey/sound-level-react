@@ -17,6 +17,7 @@ import {
 import axios from "axios";
 import GeneralModal from "./GeneralModal";
 import getTodayDate from "../../utils/getTodayDate";
+import SoundValue from "./SoundValue";
 // import getTodayDate from '../../'
 interface ReportsModalProps {
   isOpen: boolean;
@@ -528,7 +529,7 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                         style={{ height: `${height}%`, minHeight: "8px" }}
                       >
                         <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                          Day {i + 1}: {value.toFixed(1)} LV
+                          Day {i + 1}: <SoundValue lv={value} /> LV
                         </div>
                       </div>
                     );

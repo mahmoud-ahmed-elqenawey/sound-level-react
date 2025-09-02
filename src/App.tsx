@@ -13,7 +13,8 @@ import LoginForm from "./pages/Login";
 import axios from "axios";
 import SensorModal from "./components/core/SensorModal";
 import ReportsModal from "./components/core/ReportsModal";
-import toast from "react-hot-toast";
+import UnitToggle from "./components/core/UnitToggle";
+import SoundValue from "./components/core/SoundValue";
 
 interface User {
   username: string;
@@ -344,7 +345,7 @@ function App() {
                   <div className="h-8 sm:h-12 w-px bg-gray-200" />{" "}
                   <div className="text-right">
                     <div className="text-xs sm:text-sm text-gray-500">
-                      Noise
+                      Noise Units
                     </div>
                     <div className="font-mono text-sm sm:text-lg font-semibold text-gray-800">
                       1DB = 1.55LV
@@ -361,12 +362,15 @@ function App() {
                       Doctor
                     </span>
                   </div>
-                  <button
-                    onClick={handleLogout}
-                    className="px-3 py-1 text-sm bg-red-100 hover:bg-red-200 text-red-700 rounded-md transition-colors"
-                  >
-                    Logout
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleLogout}
+                      className="px-3 py-1 text-sm bg-red-100 hover:bg-red-200 text-red-700 rounded-md transition-colors"
+                    >
+                      Logout
+                    </button>
+                    <UnitToggle />
+                  </div>
                 </div>
                 {/* View mode buttons */}
                 {/* <div className="flex flex-col sm:flex-row gap-2">
@@ -525,7 +529,7 @@ function App() {
                     Average Noise
                   </p>
                   <p className="text-lg sm:text-2xl font-bold text-gray-900 mt-0.5 sm:mt-1">
-                    {statistics?.statistics?.sensors_avg} LV
+                    <SoundValue lv={statistics?.statistics?.sensors_avg} />
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5 sm:mt-1 hidden sm:block">
                     متوسط الضوضاء
@@ -651,7 +655,7 @@ function App() {
                           <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4">
                             <div className="text-left sm:text-right">
                               <div className="text-lg sm:text-2xl font-bold text-gray-900">
-                                {Math.round(dept.avg)} LV
+                                <SoundValue lv={Math.round(dept.avg)} />
                               </div>
                               {/* <div className="text-xs text-gray-500">
                               Limit: {dept.threshold} dB
@@ -726,10 +730,11 @@ function App() {
                                   </div>
                                   <div className="text-right">
                                     <div className="text-lg font-bold text-gray-900">
-                                      {!sensor.is_active
-                                        ? "--"
-                                        : Math.round(sensor.avg)}{" "}
-                                      LV
+                                      {!sensor.is_active ? (
+                                        "--"
+                                      ) : (
+                                        <SoundValue lv={Number(sensor.avg)} />
+                                      )}
                                     </div>
                                     {/* <div className="text-xs text-gray-500">
                                     {sensor.lastUpdate}

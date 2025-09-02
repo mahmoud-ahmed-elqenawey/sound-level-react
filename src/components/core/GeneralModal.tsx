@@ -4,6 +4,7 @@ import axios from "axios";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import toast from "react-hot-toast";
+import SoundValue from "./SoundValue";
 
 type TimeFrame = "3600" | "21600" | "86400" | "604800";
 
@@ -258,7 +259,7 @@ const GeneralModal = ({ departments }: any) => {
             Noise Level Trend
           </h4>
           <div className="text-xs text-gray-500">
-            Range: {minValue.toFixed(1)} - {maxValue.toFixed(1)} LV (
+            Range: <SoundValue lv={minValue} /> - <SoundValue lv={maxValue} /> (
             {allData.length} points)
           </div>
         </div>
@@ -274,7 +275,9 @@ const GeneralModal = ({ departments }: any) => {
               }}
             >
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                <div>{value.toFixed(1)} LV</div>
+                <div>
+                  <SoundValue lv={value} />
+                </div>
                 {allRecords[index]?.timestamp && (
                   <div className="text-xs opacity-75">
                     {formatDateTime(allRecords[index].timestamp)}
