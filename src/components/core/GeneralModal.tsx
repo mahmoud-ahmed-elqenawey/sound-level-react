@@ -441,14 +441,18 @@ const GeneralModal = ({ departments }: any) => {
                   Warning Level
                 </span>
                 <span className="text-lg font-bold text-yellow-900">
-                  {100} LV
+                  {/* {100} LV */}
+                  <SoundValue lv={100} />
                 </span>
               </div>
               <div className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
                 <span className="text-sm font-medium text-red-800">
                   Critical Level
                 </span>
-                <span className="text-lg font-bold text-red-900">{200} LV</span>
+                <span className="text-lg font-bold text-red-900">
+                  {/* {200} LV */}
+                  <SoundValue lv={200} />
+                </span>
               </div>
             </div>
           </div>
