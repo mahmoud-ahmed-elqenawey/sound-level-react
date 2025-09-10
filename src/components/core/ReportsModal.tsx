@@ -935,9 +935,9 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                       .slice(0, 5)
                       .map((dept: any, index: number) => {
                         const riskLevel =
-                          dept.avgNoise > 100
+                          dept.avgNoise > 200
                             ? "high"
-                            : dept.avgNoise > 75
+                            : dept.avgNoise > 100
                             ? "medium"
                             : "low";
 
@@ -1028,9 +1028,9 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                     .slice(0, 5)
                     .map((dept: any, index: number) => {
                       const riskLevel =
-                        dept.avgNoise > 100
+                        dept.avgNoise > 200
                           ? "high"
-                          : dept.avgNoise > 75
+                          : dept.avgNoise > 100
                           ? "medium"
                           : "low";
                       const riskColor =
