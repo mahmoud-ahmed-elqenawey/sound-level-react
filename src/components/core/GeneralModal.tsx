@@ -431,7 +431,7 @@ const GeneralModal = ({ departments }: any) => {
           <DetailedChart data={chartData} />
 
           {/* Threshold Information */}
-          {/* <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="text-sm font-semibold text-gray-700 mb-3">
               Threshold Settings
             </h4>
@@ -441,19 +441,17 @@ const GeneralModal = ({ departments }: any) => {
                   Warning Level
                 </span>
                 <span className="text-lg font-bold text-yellow-900">
-                  {currentData?.yellow} LV
+                  {100} LV
                 </span>
               </div>
               <div className="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
                 <span className="text-sm font-medium text-red-800">
                   Critical Level
                 </span>
-                <span className="text-lg font-bold text-red-900">
-                  {currentData?.red} LV
-                </span>
+                <span className="text-lg font-bold text-red-900">{200} LV</span>
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
       )}
     </div>

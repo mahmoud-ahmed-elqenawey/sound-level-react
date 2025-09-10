@@ -533,6 +533,8 @@ function App() {
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5 sm:mt-1 hidden sm:block">
                     متوسط الضوضاء
+                    <br />
+                    (في اخر ٦٠ دقيقة)
                   </p>
                 </div>
                 <div className="p-2 sm:p-3 bg-gray-100 rounded-lg">

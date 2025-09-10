@@ -24,7 +24,7 @@ const SoundValue = ({ lv }: any) => {
   }
   return (
     <span>
-      {unit === "LV" ? lv : converted.toFixed(2)} {unit}
+      {unit === "LV" ? lv.toFixed(2) : converted.toFixed(2)} {unit}
     </span>
   );
 };
