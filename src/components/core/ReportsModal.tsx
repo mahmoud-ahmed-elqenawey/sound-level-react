@@ -777,9 +777,9 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                     }
 
                     const bgColor =
-                      hour.level === "high"
+                      hour.level === "red"
                         ? "bg-red-500"
-                        : hour.level === "normal"
+                        : hour.level === "yellow"
                         ? "bg-yellow-500"
                         : "bg-green-500";
 
@@ -833,9 +833,9 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                         const offset = circumference - index * segment;
 
                         const color =
-                          hour.level === "high"
+                          hour.level === "red"
                             ? "#ef4444"
-                            : hour.level === "low"
+                            : hour.level === "green"
                             ? "#22c55e"
                             : "#eab308";
 
@@ -880,9 +880,9 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                     <div
                       key={index}
                       className={`p-4 rounded border ${
-                        period.level === "high"
+                        period.level === "red"
                           ? "bg-red-50 border-red-200"
-                          : period.level === "low"
+                          : period.level === "green"
                           ? "bg-green-50 border-green-200"
                           : "bg-yellow-50 border-yellow-200"
                       }`}
@@ -896,9 +896,9 @@ const ReportsModal: React.FC<ReportsModalProps> = ({
                       </p>
                       <p
                         className={`text-xs capitalize ${
-                          period.level === "high"
+                          period.level === "red"
                             ? "text-red-600"
-                            : period.level === "low"
+                            : period.level === "green"
                             ? "text-green-600"
                             : "text-yellow-600"
                         }`}
