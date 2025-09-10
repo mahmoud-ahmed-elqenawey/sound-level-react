@@ -230,13 +230,18 @@ const GeneralModal = ({ departments }: any) => {
     });
   };
 
-  const DetailedChart = ({
-    data,
-    color,
-  }: {
-    data: number[];
-    color: string;
-  }) => {
+  const getBarColor = (value: number) => {
+    if (value >= 200) {
+      return "bg-red-500"; // إزعاج عالي
+    } else if (value >= 100) {
+      return "bg-yellow-500"; // إزعاج متوسط
+    } else {
+      return "bg-green-500"; // عادي
+    }
+  };
+
+  const DetailedChart = ({ data }: { data: number[] }) => {
+    console.log("data", data);
     if (!data || data.length === 0 || !currentData) return null;
 
     // كل الـ records جايين من الـ API مباشرة
@@ -268,7 +273,9 @@ const GeneralModal = ({ departments }: any) => {
           {allData.map((value: any, index: any) => (
             <div
               key={index}
-              className={`flex-1 ${color} rounded-t-sm transition-all duration-300 relative group`}
+              className={`flex-1 ${getBarColor(
+                value
+              )} rounded-t-sm transition-all duration-300 relative group`}
               style={{
                 height: `${Math.max(((value - minRange) / range) * 100, 5)}%`,
                 minHeight: "3px",
@@ -421,7 +428,7 @@ const GeneralModal = ({ departments }: any) => {
             </div>
           </div>
 
-          <DetailedChart data={chartData} color={"bg-green-500"} />
+          <DetailedChart data={chartData} />
 
           {/* Threshold Information */}
           {/* <div className="bg-gray-50 p-4 rounded-lg">
